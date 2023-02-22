@@ -13,6 +13,7 @@ import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.ValidateEmail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -24,6 +25,11 @@ public class SellerService {
     @Autowired
     private SellerRepository repository;
 
+    private String passwordEncryptor(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(password);
+    }
+
     public static final String SELLER_NOT_FOUND = "Seller not found.";
 
     public void registerSeller(SellerForm form) {
@@ -33,6 +39,7 @@ public class SellerService {
             if (optionalUser.isPresent()) {
                 throw new RequestException("Email already in use.");
             }
+            form.setPassword(passwordEncryptor(form.getPassword()));
             save(SellerMapper.fromFormToSellerEntity(form));
         } catch (RequestException e) {
             log.error(e.getMessage());
