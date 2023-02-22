@@ -108,6 +108,9 @@ public class SellerService {
         if (seller.getName() == null || seller.getName().length() < 3) {
             throw new RequestException("Name must be neither null nor shorter than 3.");
         }
+        if (seller.getPassword().length() < 8) {
+            throw new RequestException("Password must be at least 8 char long.");
+        }
         repository.save(seller);
     }
 }

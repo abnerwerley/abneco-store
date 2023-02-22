@@ -34,6 +34,7 @@ class SellerServiceTest {
     public static final String EMAIL = "name@email.com";
     public static final String NEW_EMAIL = "name@newemail.com";
     public static final String PASSWORD = "12345678";
+    public static final String SHORT_PASSWORD = "1234567";
     public static final Long PHONE_NUMBER = 1112345678L;
     public static final String CNPJ = "09876543211234";
     public static final String SHORT_CNPJ = "0987654321123";
@@ -100,6 +101,12 @@ class SellerServiceTest {
         Exception nullName = assertThrows(RequestException.class, () -> service.registerSeller(nullNameForm));
         assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
+        verify(repository, never()).save(Mockito.any(Seller.class));
+
+        SellerForm shortPasswordForm = new SellerForm(NAME, EMAIL, SHORT_PASSWORD, PHONE_NUMBER, CNPJ);
+        Exception shortPassword = assertThrows(RequestException.class, () -> service.registerSeller(shortPasswordForm));
+        assertNotNull(shortPassword);
+        assertEquals("Password must be at least 8 char long.", shortPassword.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
 
