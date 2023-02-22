@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class RestExceptionHandler {
 
     @ExceptionHandler(RequestException.class)
-    public ResponseEntity<?> handleRequestException(RequestException e) {
+    public ResponseEntity<ExceptionResponseDetails> handleRequestException(RequestException e) {
         ExceptionResponseDetails details = ExceptionResponseDetails.Builder
                 .newBuilder()
                 .title("Request Exception")
@@ -22,6 +22,19 @@ public class RestExceptionHandler {
                 .message(e.getClass().getName())
                 .build();
         return new ResponseEntity<>(details, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionResponseDetails> handleResourceNotFoundException(ResourceNotFoundException e) {
+        ExceptionResponseDetails details = ExceptionResponseDetails.Builder
+                .newBuilder()
+                .title("Resource not found exception")
+                .status(HttpStatus.NOT_FOUND.value())
+                .detail(e.getMessage())
+                .timestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss")))
+                .message(e.getClass().getName())
+                .build();
+        return new ResponseEntity<>(details, HttpStatus.NOT_FOUND);
     }
 
 }
