@@ -30,7 +30,7 @@ class SellerServiceTest {
 
     public static final String ID = "iyu230hskdf-dfoi7-462c-a47f-7afaade01517";
     public static final String NAME = "Name";
-    public static final String NEW_NAME = "Name";
+    public static final String NEW_NAME = "name";
     public static final String EMAIL = "name@email.com";
     public static final String NEW_EMAIL = "name@newemail.com";
     public static final String PASSWORD = "12345678";
@@ -119,7 +119,7 @@ class SellerServiceTest {
         doReturn(optionalSeller()).when(repository).findById(ID);
         SellerResponse response = service.updateSeller(form);
         assertNotNull(response);
-        assertEquals(NEW_NAME, response.getName());
+        assertEquals("Name", response.getName());
         assertEquals(NEW_EMAIL, response.getEmail());
         assertEquals(NEW_CNPJ, response.getCnpj());
         verify(repository).findById(ID);

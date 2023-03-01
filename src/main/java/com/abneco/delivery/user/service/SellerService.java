@@ -10,7 +10,7 @@ import com.abneco.delivery.user.json.SellerUpdateForm;
 import com.abneco.delivery.user.json.mapper.SellerResponseMapper;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.utils.DateFormatter;
-import com.abneco.delivery.utils.NameFormatter;
+import com.abneco.delivery.utils.UpperCaseFormatter;
 import com.abneco.delivery.utils.ValidateEmail;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +57,7 @@ public class SellerService {
                 throw new ResourceNotFoundException(SELLER_NOT_FOUND);
             }
             Seller seller = optionalUser.get();
-            seller.setName(NameFormatter.formatToCapitalLetter(form.getName()));
+            seller.setName(UpperCaseFormatter.formatToCapitalLetter(form.getName()));
             seller.setEmail(form.getEmail());
             seller.setPhoneNumber(form.getPhoneNumber());
             seller.setCnpj(form.getCnpj());
