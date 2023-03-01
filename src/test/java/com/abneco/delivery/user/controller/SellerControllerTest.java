@@ -28,8 +28,8 @@ class SellerControllerTest {
     private SellerRepository repository;
 
     public static final String ID = "lkajsçdlgnçblkdrt98709lsdkjfn,manfg";
-    public static final String EMAIL = "string2341@email.com";
-    public static final String EMAIL2 = "19823@email.com";
+    public static final String EMAIL = "email.string@email.com";
+    public static final String EMAIL2 = "email21@email.com";
     public static final String CNPJ = "12348765324123";
     public static final String NAME = "seller1";
     public static final String PASSWORD = "12345678";

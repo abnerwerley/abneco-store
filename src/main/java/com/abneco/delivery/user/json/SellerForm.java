@@ -15,6 +15,5 @@ public class SellerForm {
     private String email;
     private String password;
     private Long phoneNumber;
-
     private String cnpj;
 }

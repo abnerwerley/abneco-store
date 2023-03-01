@@ -39,13 +39,11 @@ public class SellerService {
             if (optionalUser.isPresent()) {
                 throw new RequestException("Email already in use.");
             }
-            form.setPassword(passwordEncryptor(form.getPassword()));
-            save(SellerMapper.fromFormToSellerEntity(form));
+            save(SellerMapper.fromFormToSellerEntity(form), form);
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
             log.error(e.getMessage());
             throw new RequestException("Could not register seller.");
         }
@@ -64,7 +62,7 @@ public class SellerService {
             seller.setCnpj(form.getCnpj());
             seller.setUpdatedAt(DateFormatter.formatNow());
             ValidateEmail.validateEmail(form.getEmail());
-            save(seller);
+            save(seller, form);
             return SellerResponseMapper.fromEntityToResponse(seller);
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -108,7 +106,7 @@ public class SellerService {
         }
     }
 
-    private void save(Seller seller) {
+    private void save(Seller seller, SellerForm form) {
         if (seller.getCnpj() == null || seller.getCnpj().length() != 14) {
             throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
         }
@@ -116,7 +114,17 @@ public class SellerService {
             throw new RequestException("Name must be neither null nor shorter than 3.");
         }
         if (seller.getPassword().length() < 8) {
+            seller.setPassword(passwordEncryptor(form.getPassword()));
             throw new RequestException("Password must be at least 8 char long.");
+        }
+        repository.save(seller);
+    }
+    private void save(Seller seller, SellerUpdateForm form) {
+        if (form.getCnpj() == null || form.getCnpj().length() != 14) {
+            throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
+        }
+        if (form.getName() == null || form.getName().length() < 3) {
+            throw new RequestException("Name must be neither null nor shorter than 3.");
         }
         repository.save(seller);
     }
