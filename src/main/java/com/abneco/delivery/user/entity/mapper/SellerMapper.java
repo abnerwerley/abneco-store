@@ -7,7 +7,8 @@ import com.abneco.delivery.utils.DateFormatter;
 public class SellerMapper {
 
     public static Seller fromFormToSellerEntity(SellerForm form) {
-        return Seller.builder().name(form.getName())
+        return Seller.builder()
+                .name(form.getName())
                 .email(form.getEmail())
                 .cnpj(form.getCnpj())
                 .password(form.getPassword())

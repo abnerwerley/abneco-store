@@ -26,7 +26,7 @@ class SellerServiceTest {
     private SellerService service;
 
     @Mock
-    SellerRepository repository;
+    private SellerRepository repository;
 
     public static final String ID = "iyu230hskdf-dfoi7-462c-a47f-7afaade01517";
     public static final String NAME = "Name";
@@ -102,7 +102,10 @@ class SellerServiceTest {
         assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
+    }
 
+    @Test
+    void testRegisterSellerShortPassword(){
         SellerForm shortPasswordForm = new SellerForm(NAME, EMAIL, SHORT_PASSWORD, PHONE_NUMBER, CNPJ);
         Exception shortPassword = assertThrows(RequestException.class, () -> service.registerSeller(shortPasswordForm));
         assertNotNull(shortPassword);
@@ -169,6 +172,14 @@ class SellerServiceTest {
     }
 
     public Optional<Seller> optionalSeller() {
-        return Optional.of(Seller.builder().build());
+        return Optional.of(Seller.builder()
+                .id(ID)
+                .name(NAME)
+                .email(EMAIL)
+                .emailVerified(false)
+                .password(PASSWORD)
+                .cnpj(CNPJ)
+                .createdAt("01/03/2023 14:47")
+                .build());
     }
 }
