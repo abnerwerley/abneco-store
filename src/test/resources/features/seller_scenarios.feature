@@ -1,5 +1,10 @@
 Feature: Seller
 
+
+#  As a system,
+#  I want to allow the registration of new sellers,
+#  So that they can use our services.
+
   Scenario: Register a new seller
     Given the following seller data:
       | name         | email          | password     | phoneNumber  | cnpj           |
@@ -9,6 +14,10 @@ Feature: Seller
     Then the seller should be successfully registered
 
 
+#  As a system,
+#  I want to ensure that a user with an incorrect email format cannot be registered,
+#  So that I can maintain data accuracy and prevent errors.
+
   Scenario: shouldn't register a user with email in wrong format
     Given the following seller data with wrong email:
       | name | email      | password  | phoneNumber  | cnpj           |
@@ -17,6 +26,9 @@ Feature: Seller
     When a request to register the seller with incorrect email is made
     Then exception thrown explaining that email has incorrect format
 
+#    As a system,
+#    I want to ensure that a seller cannot be registered with an invalid cnpj
+#    To avoid inconsistences in registration data and legal problems
 
   Scenario: shouldn't register a user with incorrect cnpj
     Given seller with incorrect cnpjs
