@@ -4,12 +4,16 @@ import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.json.SellerResponse;
 import com.abneco.delivery.user.json.SellerUpdateForm;
 import com.abneco.delivery.user.service.SellerService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/seller")
+@AllArgsConstructor
+@NoArgsConstructor
 public class SellerController {
 
     @Autowired

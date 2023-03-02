@@ -12,6 +12,8 @@ import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
 import com.abneco.delivery.utils.ValidateEmail;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +23,8 @@ import java.util.Optional;
 
 @Service
 @Slf4j
+@AllArgsConstructor
+@NoArgsConstructor
 public class SellerService {
 
     @Autowired
@@ -120,6 +124,7 @@ public class SellerService {
         }
         repository.save(seller);
     }
+
     private void save(Seller seller, SellerUpdateForm form) {
         if (form.getCnpj() == null || form.getCnpj().length() != 14) {
             throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
