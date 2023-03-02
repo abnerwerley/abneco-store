@@ -6,6 +6,7 @@ import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.fee.controller.FeeController;
 import com.abneco.delivery.fee.dto.CepForm;
 import com.abneco.delivery.fee.service.FeeService;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -15,13 +16,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class SendNullCepStep {
 
-    private final CepForm form = new CepForm(CEP);
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final AddressService addressService = new AddressService(restTemplate);
-    private final FeeService service = new FeeService(addressService);
-    private final FeeController controller = new FeeController(service);
+    private FeeController controller;
+    private CepForm form;
 
     public static final String CEP = null;
+
+    @Before
+    public void setup() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService addressService = new AddressService(restTemplate);
+        FeeService service = new FeeService(addressService);
+        this.controller = new FeeController(service);
+        this.form = new CepForm(CEP);
+    }
 
     @Given("null cep")
     public void null_cep() {
