@@ -1,7 +1,7 @@
 Feature: Seller
 
 
-#  As a system,
+#  As Abneco Delivery,
 #  I want to allow the registration of new sellers,
 #  So that they can use our services.
 
@@ -14,7 +14,7 @@ Feature: Seller
     Then the seller should be successfully registered
 
 
-#  As a system,
+#  As Abneco Delivery,
 #  I want to ensure that a user with an incorrect email format cannot be registered,
 #  So that I can maintain data accuracy and prevent errors.
 
@@ -26,7 +26,7 @@ Feature: Seller
     When a request to register the seller with incorrect email is made
     Then exception thrown explaining that email has incorrect format
 
-#    As a system,
+#    As Abneco Delivery,
 #    I want to ensure that a seller cannot be registered with an invalid cnpj
 #    To avoid inconsistences in registration data and legal problems
 
