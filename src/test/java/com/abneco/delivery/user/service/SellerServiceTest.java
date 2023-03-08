@@ -115,6 +115,14 @@ class SellerServiceTest {
     }
 
     @Test
+    void testRegisterSellerException() {
+        SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
+        when(repository.findByEmail(EMAIL)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
+        assertEquals("Could not register seller.", exception.getMessage());
+    }
+
+    @Test
     void testUpdateSeller() {
         SellerUpdateForm form = new SellerUpdateForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         doReturn(optionalSeller()).when(repository).findById(ID);
@@ -137,6 +145,26 @@ class SellerServiceTest {
     }
 
     @Test
+    void testUpdateSellerRequestException() {
+        SellerUpdateForm nullNameForm = new SellerUpdateForm(ID, SHORT_NAME, EMAIL, PHONE_NUMBER, CNPJ);
+        when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller(ID)));
+        Exception nullName = assertThrows(RequestException.class, () -> service.updateSeller(nullNameForm));
+        assertNotNull(nullName);
+        assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
+        verify(repository, never()).save(Mockito.any(Seller.class));
+    }
+
+    @Test
+    void testUpdateSellerException() {
+        SellerUpdateForm form = new SellerUpdateForm(ID, NAME, EMAIL, PHONE_NUMBER, CNPJ);
+        when(repository.findById(form.getId())).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
+        assertNotNull(exception);
+        assertEquals("Could not update seller.", exception.getMessage());
+        verify(repository, never()).save(Mockito.any(Seller.class));
+    }
+
+    @Test
     void testFindSellerById() {
         doReturn(optionalSeller()).when(repository).findById(ID);
         SellerResponse response = service.findSellerById(ID);
@@ -150,6 +178,15 @@ class SellerServiceTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.findSellerById(ID));
         assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
+        verify(repository).findById(ID);
+    }
+
+    @Test
+    void testFindSellerByIdException() {
+        when(repository.findById(ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.findSellerById(ID));
+        assertNotNull(exception);
+        assertEquals("Could not find seller by id: " + ID, exception.getMessage());
         verify(repository).findById(ID);
     }
 
@@ -168,6 +205,16 @@ class SellerServiceTest {
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteSellerById(ID));
         assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).deleteById(ID);
+    }
+
+    @Test
+    void testDeleteSellerByIdException() {
+        when(repository.findById(ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.deleteSellerById(ID));
+        assertNotNull(exception);
+        assertEquals("Could not delete seller with id: " + ID, exception.getMessage());
         verify(repository).findById(ID);
         verify(repository, never()).deleteById(ID);
     }
