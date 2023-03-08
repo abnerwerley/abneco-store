@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,5 +76,26 @@ class SellerControllerTest {
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Email has incorrect format."));
+    }
+
+    @Test
+    void test_get_all_sellers() throws Exception {
+        SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
+        JuridicalPerson user = new JuridicalPerson(form.getEmail(), CNPJ, NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
+        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+
+        mockMvc.perform(get("/seller")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        Seller seller = repository.findByEmail(EMAIL2).get();
+        repository.deleteById(seller.getId());
+    }
+
+    @Test
+    void test_get_all_sellers_no_content() throws Exception {
+        mockMvc.perform(get("/seller")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
     }
 }

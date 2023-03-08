@@ -8,7 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/seller")
@@ -35,6 +38,16 @@ public class SellerController {
     @ResponseStatus(HttpStatus.OK)
     public SellerResponse getSellerById(@PathVariable String id) {
         return service.findSellerById(id);
+    }
+
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<SellerResponse>> getAllSellers() {
+        List<SellerResponse> sellers = service.findAllSellers();
+        if (sellers.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(sellers);
     }
 
     @DeleteMapping("/{id}")

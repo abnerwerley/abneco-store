@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -70,8 +72,13 @@ public class SellerService {
             save(seller, form);
             return SellerResponseMapper.fromEntityToResponse(seller);
         } catch (ResourceNotFoundException e) {
-            log.error(e.getMessage());
+            log.error("Seller not found: " + e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
+
+        } catch (RequestException e) {
+            log.error(e.getMessage());
+            throw new RequestException(e.getMessage());
+
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new RequestException("Could not update seller.");
@@ -92,6 +99,15 @@ public class SellerService {
             log.error(e.getMessage());
             throw new RequestException("Could not find seller by id: " + id);
         }
+    }
+
+    public List<SellerResponse> findAllSellers() {
+        List<Seller> sellers = repository.findAll();
+        List<SellerResponse> response = new ArrayList<>();
+        for (Seller seller : sellers) {
+            response.add(SellerResponseMapper.fromEntityToResponse(seller));
+        }
+        return response;
     }
 
     public void deleteSellerById(String id) {
