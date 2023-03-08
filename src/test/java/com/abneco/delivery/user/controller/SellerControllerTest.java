@@ -29,7 +29,7 @@ class SellerControllerTest {
 
     public static final String ID = "lkajsçdlgnçblkdrt98709lsdkjfn,manfg";
     public static final String EMAIL = "email.string@email.com";
-    public static final String EMAIL2 = "email21@email.com";
+    public static final String EMAIL2 = "email2.string@email.com";
     public static final String CNPJ = "12348765324123";
     public static final String NAME = "seller1";
     public static final String PASSWORD = "12345678";
@@ -45,6 +45,9 @@ class SellerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isCreated());
+
+        Seller seller = repository.findByEmail(EMAIL).get();
+        repository.deleteById(seller.getId());
     }
 
     @Test
@@ -56,6 +59,9 @@ class SellerControllerTest {
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Email already in use."));
+
+        Seller seller = repository.findByEmail(EMAIL2).get();
+        repository.deleteById(seller.getId());
     }
 
     @Test

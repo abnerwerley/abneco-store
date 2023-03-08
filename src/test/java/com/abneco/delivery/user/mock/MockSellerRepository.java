@@ -18,7 +18,6 @@ public class MockSellerRepository implements SellerRepository {
         return Optional.empty();
     }
 
-
     public Optional<Seller> findByEmail() {
         return Optional.of(new Seller());
     }
