@@ -1,6 +1,5 @@
 Feature: Seller
 
-
 #  As Abneco Delivery,
 #  I want to allow the registration of new sellers,
 #  So that they can use our services.
@@ -38,3 +37,19 @@ Feature: Seller
     When a request to register the seller with incorrect cnpj is made
     Then exception thrown explaining that cnpj should have only 14 chars and only numbers
 
+
+#  As Abneco Delivery,
+#  I want to be able to find all sellers saved in the database.
+
+  Scenario: getting all sellers
+    When request is made to get all sellers
+    Then all sellers should be returned
+
+
+#  As Abneco Delivery,
+#  I want to be able to find sellers by their id.
+
+  Scenario: getting seller by nonexistent id
+    Given id of a nonexistent seller
+    When request is made to get seller by id nonexistent
+    Then seller with given nonexistent id should be returned

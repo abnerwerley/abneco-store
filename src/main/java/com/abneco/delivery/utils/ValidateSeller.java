@@ -15,13 +15,13 @@ public class ValidateSeller {
 
     public static void validateSeller(Seller seller, SellerForm form) {
         ValidateEmail.validateEmail(form.getEmail());
-        if (seller.getCnpj() == null || seller.getCnpj().length() != 14) {
+        if (form.getCnpj() == null || form.getCnpj().length() != 14) {
             throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
         }
-        if (seller.getName() == null || seller.getName().length() < 3) {
+        if (form.getName() == null || form.getName().length() < 3) {
             throw new RequestException("Name must be neither null nor shorter than 3.");
         }
-        if (seller.getPassword().length() < 8) {
+        if (form.getPassword().length() < 8) {
             seller.setPassword(passwordEncryptor(form.getPassword()));
             throw new RequestException("Password must be at least 8 char long.");
         }

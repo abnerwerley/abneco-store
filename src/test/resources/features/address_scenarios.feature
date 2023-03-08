@@ -35,6 +35,8 @@ Feature: Address
     When a request to register address with null number is made
     Then the addres shouldn't be registered because number cannot be null
 
+#  As Abneco Delivery,
+#  I want to be able to find all addresses saved in the database.
 
   Scenario: getting all addresses
     When request is made to get all addresses
