@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -171,6 +172,14 @@ class SellerServiceTest {
         verify(repository, never()).deleteById(ID);
     }
 
+    @Test
+    void testFindAllSellers() {
+        when(repository.findAll()).thenReturn(List.of(getSeller()));
+        List<SellerResponse> response = service.findAllSellers();
+        assertNotNull(response);
+        assertEquals(1, response.size());
+    }
+
     public Optional<Seller> optionalSeller() {
         Seller seller = new Seller();
         seller.setId(ID);
@@ -181,5 +190,17 @@ class SellerServiceTest {
         seller.setPassword(PASSWORD);
         seller.setCreatedAt("01/03/2023 14:47");
         return Optional.of(seller);
+    }
+
+    public Seller getSeller() {
+        Seller seller = new Seller();
+        seller.setId(ID);
+        seller.setName(NAME);
+        seller.setEmail(EMAIL);
+        seller.setCnpj(CNPJ);
+        seller.setEmailVerified(false);
+        seller.setPassword(PASSWORD);
+        seller.setCreatedAt("01/03/2023 14:47");
+        return seller;
     }
 }
