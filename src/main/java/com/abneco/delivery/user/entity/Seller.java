@@ -3,6 +3,7 @@ package com.abneco.delivery.user.entity;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,6 +19,7 @@ public class Seller extends JuridicalPerson {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "seller_id")
     private String id;
 
     public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt) {
