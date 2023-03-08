@@ -3,7 +3,6 @@ package com.abneco.delivery.user.entity;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,27 +20,15 @@ public class Seller extends JuridicalPerson {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "cnpj")
-    private String cnpj;
-
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "phoneNumber")
-    private Long phoneNumber;
-
-    @Column(name = "emailVerified")
-    private Boolean emailVerified;
-
-    @Column(name = "createdAt")
-    private String createdAt;
-
-    @Column(name = "updatedAt")
-    private String updatedAt;
+    public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt) {
+        this.id = id;
+        this.setEmail(user.getEmail());
+        this.setCnpj(user.getCnpj());
+        this.setName(user.getName());
+        this.setPassword(user.getPassword());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setEmailVerified(user.getEmailVerified());
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+    }
 }

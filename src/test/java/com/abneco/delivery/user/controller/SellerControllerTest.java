@@ -1,5 +1,6 @@
 package com.abneco.delivery.user.controller;
 
+import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
@@ -53,7 +54,9 @@ class SellerControllerTest {
     @Test
     void test_register_seller_email_already_in_use() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        repository.save(new Seller(ID, form.getEmail(), CNPJ, NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED, CREATED_AT, UPDATED_AT));
+        JuridicalPerson user = new JuridicalPerson(form.getEmail(), CNPJ, NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
+        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+
         mockMvc.perform(post("/seller")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
@@ -66,7 +69,6 @@ class SellerControllerTest {
 
     @Test
     void test_register_seller_email_not_formated() throws Exception {
-
         SellerForm form = new SellerForm(NAME, "email", PASSWORD, PHONE_NUMBER, CNPJ);
         mockMvc.perform(post("/seller")
                         .contentType(MediaType.APPLICATION_JSON)

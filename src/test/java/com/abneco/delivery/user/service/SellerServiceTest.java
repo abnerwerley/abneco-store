@@ -105,7 +105,7 @@ class SellerServiceTest {
     }
 
     @Test
-    void testRegisterSellerShortPassword(){
+    void testRegisterSellerShortPassword() {
         SellerForm shortPasswordForm = new SellerForm(NAME, EMAIL, SHORT_PASSWORD, PHONE_NUMBER, CNPJ);
         Exception shortPassword = assertThrows(RequestException.class, () -> service.registerSeller(shortPasswordForm));
         assertNotNull(shortPassword);
@@ -172,14 +172,14 @@ class SellerServiceTest {
     }
 
     public Optional<Seller> optionalSeller() {
-        return Optional.of(Seller.builder()
-                .id(ID)
-                .name(NAME)
-                .email(EMAIL)
-                .emailVerified(false)
-                .password(PASSWORD)
-                .cnpj(CNPJ)
-                .createdAt("01/03/2023 14:47")
-                .build());
+        Seller seller = new Seller();
+        seller.setId(ID);
+        seller.setName(NAME);
+        seller.setEmail(EMAIL);
+        seller.setCnpj(CNPJ);
+        seller.setEmailVerified(false);
+        seller.setPassword(PASSWORD);
+        seller.setCreatedAt("01/03/2023 14:47");
+        return Optional.of(seller);
     }
 }
