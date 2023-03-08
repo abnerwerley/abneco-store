@@ -1,4 +1,4 @@
-package com.abneco.delivery.feeService;
+package com.abneco.delivery.fee;
 
 import com.abneco.delivery.address.dto.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
