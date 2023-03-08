@@ -11,12 +11,11 @@ import com.abneco.delivery.user.json.mapper.SellerResponseMapper;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
-import com.abneco.delivery.utils.ValidateEmail;
+import com.abneco.delivery.utils.ValidateSeller;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,16 +31,10 @@ public class SellerService {
     @Autowired
     private SellerRepository repository;
 
-    private String passwordEncryptor(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
-    }
-
     public static final String SELLER_NOT_FOUND = "Seller not found.";
 
     public void registerSeller(SellerForm form) {
         try {
-            ValidateEmail.validateEmail(form.getEmail());
             Optional<Seller> optionalUser = repository.findByEmail(form.getEmail());
             if (optionalUser.isPresent()) {
                 throw new RequestException("Email already in use.");
@@ -68,9 +61,9 @@ public class SellerService {
             seller.setPhoneNumber(form.getPhoneNumber());
             seller.setCnpj(form.getCnpj());
             seller.setUpdatedAt(DateFormatter.formatNow());
-            ValidateEmail.validateEmail(form.getEmail());
             save(seller, form);
             return SellerResponseMapper.fromEntityToResponse(seller);
+
         } catch (ResourceNotFoundException e) {
             log.error("Seller not found: " + e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -123,31 +116,17 @@ public class SellerService {
 
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new RequestException("Could not find seller by id: " + id);
+            throw new RequestException("Could not delete seller with id: " + id);
         }
     }
 
     private void save(Seller seller, SellerForm form) {
-        if (seller.getCnpj() == null || seller.getCnpj().length() != 14) {
-            throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
-        }
-        if (seller.getName() == null || seller.getName().length() < 3) {
-            throw new RequestException("Name must be neither null nor shorter than 3.");
-        }
-        if (seller.getPassword().length() < 8) {
-            seller.setPassword(passwordEncryptor(form.getPassword()));
-            throw new RequestException("Password must be at least 8 char long.");
-        }
+        ValidateSeller.validateSeller(seller, form);
         repository.save(seller);
     }
 
     private void save(Seller seller, SellerUpdateForm form) {
-        if (form.getCnpj() == null || form.getCnpj().length() != 14) {
-            throw new RequestException("Cnpj must have 14 numbers, and numbers only.");
-        }
-        if (form.getName() == null || form.getName().length() < 3) {
-            throw new RequestException("Name must be neither null nor shorter than 3.");
-        }
+        ValidateSeller.validateSeller(form);
         repository.save(seller);
     }
 }
