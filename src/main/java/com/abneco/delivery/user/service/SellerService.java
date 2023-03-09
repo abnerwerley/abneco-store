@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -32,6 +33,11 @@ public class SellerService {
     private SellerRepository repository;
 
     public static final String SELLER_NOT_FOUND = "Seller not found.";
+
+    private static String passwordEncryptor(String password) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.encode(password);
+    }
 
     public void registerSeller(SellerForm form) {
         try {
@@ -121,7 +127,8 @@ public class SellerService {
     }
 
     private void save(Seller seller, SellerForm form) {
-        ValidateSeller.validateSeller(seller, form);
+        ValidateSeller.validateSeller(form);
+        seller.setPassword(passwordEncryptor(form.getPassword()));
         repository.save(seller);
     }
 

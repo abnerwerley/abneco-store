@@ -147,7 +147,7 @@ class SellerServiceTest {
     @Test
     void testUpdateSellerRequestException() {
         SellerUpdateForm nullNameForm = new SellerUpdateForm(ID, SHORT_NAME, EMAIL, PHONE_NUMBER, CNPJ);
-        when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller(ID)));
+        when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller()));
         Exception nullName = assertThrows(RequestException.class, () -> service.updateSeller(nullNameForm));
         assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());

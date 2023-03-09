@@ -1,12 +1,10 @@
 package com.abneco.delivery.user.entity;
 
+import com.abneco.delivery.address.entity.Address;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +19,9 @@ public class Seller extends JuridicalPerson {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     @Column(name = "seller_id")
     private String id;
+
+    @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL)
+    private Address address;
 
     public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt) {
         this.id = id;

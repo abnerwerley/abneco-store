@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressResponse {
+    private String userId;
     private String cep;
     private String logradouro;
     private String complemento;
