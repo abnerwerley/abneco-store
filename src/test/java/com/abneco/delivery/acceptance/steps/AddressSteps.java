@@ -6,6 +6,8 @@ import com.abneco.delivery.address.mock.AddressMockRepository;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.user.mock.MockSellerRepositoryData;
+import com.abneco.delivery.user.repository.SellerRepository;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -21,37 +23,36 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AddressSteps {
 
     private AddressController controller;
-    private AddressRepository repository;
     private AddressForm form;
     private AddressForm invalidForm;
     private AddressForm nullNumberForm;
+
+    public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
     public static final String COMPLEMENTO = "";
-    public static final String LOGRADOURO = "rua qualquer";
-    public static final String BAIRRO = "jardim bairro";
-    public static final String CIDADE = "cidade";
-    public static final String UF = "SP";
-    public static final Integer NUMBER = 12;
 
 
     @Before
     public void setup() {
         RestTemplate restTemplate = new RestTemplate();
-        this.repository = new AddressMockRepository();
-        AddressService service = new AddressService(repository, restTemplate);
+        AddressRepository repository = new AddressMockRepository();
+        SellerRepository sellerRepository = new MockSellerRepositoryData();
+        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
         this.controller = new AddressController(service);
     }
 
     //  Scenario: valid address data
     @Given("the following address data:")
     public void address_form_valid_fields(DataTable dataTable) {
+
         List<Map<String, String>> addresses = dataTable.asMaps();
 
         for (Map<String, String> address : addresses) {
+            String sellerId = address.get("sellerId");
             String cpf = address.get("cep");
             String complemento = address.get("complemento");
             Integer numero = Integer.valueOf(address.get("numero"));
-            this.form = new AddressForm(cpf, complemento, numero);
+            this.form = new AddressForm(sellerId, cpf, complemento, numero);
         }
     }
 
@@ -73,10 +74,11 @@ public class AddressSteps {
         List<Map<String, String>> addresses = dataTable.asMaps();
 
         for (Map<String, String> address : addresses) {
+            String sellerId = address.get("selllerId");
             String cpf = address.get("cep");
             String complemento = address.get("complemento");
             Integer numero = Integer.valueOf(address.get("numero"));
-            this.invalidForm = new AddressForm(cpf, complemento, numero);
+            this.invalidForm = new AddressForm(sellerId, cpf, complemento, numero);
         }
     }
 
@@ -96,7 +98,7 @@ public class AddressSteps {
 
     @Given("the address form with null number")
     public void address_form_with_null_number() {
-        this.nullNumberForm = new AddressForm(CEP, COMPLEMENTO, null);
+        this.nullNumberForm = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, null);
     }
 
     @When("a request to register address with null number is made")

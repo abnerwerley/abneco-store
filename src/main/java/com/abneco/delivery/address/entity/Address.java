@@ -1,13 +1,12 @@
 package com.abneco.delivery.address.entity;
 
+import com.abneco.delivery.address.dto.AddressForm;
 import com.abneco.delivery.address.dto.AddressResponse;
+import com.abneco.delivery.user.entity.Seller;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -47,18 +46,25 @@ public class Address {
     @NotNull
     private Integer numero;
 
-    public Address(String cep, String logradouro, String complemento, String bairro, String cidade, String uf, Integer numero) {
-        this.cep = cep;
+    @OneToOne
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
+
+
+    public Address(Seller user, AddressForm form, String logradouro, String bairro, String cidade, String uf) {
+        this.seller = user;
+        this.cep = form.getCep();
         this.logradouro = logradouro;
-        this.complemento = complemento;
+        this.complemento = form.getComplemento();
         this.bairro = bairro;
         this.cidade = cidade;
         this.uf = uf;
-        this.numero = numero;
+        this.numero = form.getNumero();
     }
 
-    public AddressResponse toResponse() {
+    public AddressResponse toResponse(String userId) {
         AddressResponse response = new AddressResponse();
+        response.setUserId(userId);
         response.setCep(this.cep);
         response.setLogradouro(this.logradouro);
         response.setComplemento(this.complemento);

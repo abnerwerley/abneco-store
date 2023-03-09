@@ -13,6 +13,8 @@ import javax.validation.constraints.Size;
 public class AddressForm {
 
     @NotNull
+    private String userId;
+    @NotNull
     @Size(min = 8, max = 8)
     private String cep;
     private String complemento;

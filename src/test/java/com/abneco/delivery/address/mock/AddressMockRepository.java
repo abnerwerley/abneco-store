@@ -1,7 +1,10 @@
 package com.abneco.delivery.address.mock;
 
+import com.abneco.delivery.address.dto.AddressForm;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
+import com.abneco.delivery.user.entity.JuridicalPerson;
+import com.abneco.delivery.user.entity.Seller;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +22,10 @@ public class AddressMockRepository implements AddressRepository {
 
     @Override
     public List<Address> findAll() {
-        return List.of(new Address());
+        JuridicalPerson juridicalPerson = new JuridicalPerson("email.@gmail.com", "12345678123456", "Abneco Delivery", "12345678", 11908765132L, false);
+        Seller user = new Seller("kasdjlfkajsçdlkfjalçkdjfalkdjf", juridicalPerson, "", "");
+        AddressForm form = new AddressForm("kasdjlfkajsçdlkfjalçkdjfalkdjf", "12345678", "", 24);
+        return List.of(new Address(user, form, "rua tal", "jardim do meu endereço", "cidade exemplo", "RJ"));
     }
 
     @Override

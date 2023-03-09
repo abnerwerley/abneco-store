@@ -6,6 +6,8 @@ import com.abneco.delivery.address.dto.AddressTO;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.user.entity.Seller;
+import com.abneco.delivery.user.repository.SellerRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Setter
@@ -27,6 +30,9 @@ public class AddressService {
 
     @Autowired
     private AddressRepository repository;
+
+    @Autowired
+    private SellerRepository sellerRepository;
     @Autowired
     private RestTemplate restTemplate;
 
@@ -53,8 +59,13 @@ public class AddressService {
 
     public void registerAddressByCep(AddressForm form) {
         try {
+            Optional<Seller> seller = sellerRepository.findById(form.getUserId());
+            if (seller.isEmpty()) {
+                throw new RequestException("User does not exist.");
+            }
             AddressTO addressTO = getAddressTemplate(form.getCep());
             Address address = new Address();
+            address.setSeller(seller.get());
             address.setCep(form.getCep());
             address.setLogradouro(addressTO.getLogradouro());
             address.setComplemento(form.getComplemento());
@@ -78,7 +89,7 @@ public class AddressService {
             List<Address> addresses = repository.findAll();
             List<AddressResponse> response = new ArrayList<>();
             for (Address address : addresses) {
-                AddressResponse responseTo = address.toResponse();
+                AddressResponse responseTo = address.toResponse(address.getSeller().getId());
                 response.add(responseTo);
             }
             return response;
