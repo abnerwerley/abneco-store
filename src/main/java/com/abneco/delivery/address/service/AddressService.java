@@ -3,9 +3,11 @@ package com.abneco.delivery.address.service;
 import com.abneco.delivery.address.dto.AddressForm;
 import com.abneco.delivery.address.dto.AddressResponse;
 import com.abneco.delivery.address.dto.AddressTO;
+import com.abneco.delivery.address.dto.AddressUpdateForm;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.repository.SellerRepository;
 import lombok.AllArgsConstructor;
@@ -43,6 +45,8 @@ public class AddressService {
     public AddressService(AddressRepository repository) {
         this.repository = repository;
     }
+
+    public static final String ADDRESS_NUMBER_NOT_NULL_MESSAGE = "Address number must not be null.";
 
     public AddressTO getAddressTemplate(String cep) {
         try {
@@ -99,11 +103,57 @@ public class AddressService {
         }
     }
 
+    public void updateAddress(AddressUpdateForm form) {
+        try {
+            Optional<Seller> optionalSeller = sellerRepository.findById(form.getUserId());
+            Optional<Address> optionalAddress = repository.findById(form.getAddressId());
+            if (optionalSeller.isEmpty()) {
+                throw new ResourceNotFoundException("Seller not found.");
+            }
+            if (optionalAddress.isEmpty()) {
+                throw new ResourceNotFoundException("Address not found.");
+            }
+
+            Address address = optionalAddress.get();
+
+            AddressTO searchByCep = this.getAddressTemplate(form.getCep());
+            address.setCep(form.getCep());
+            address.setLogradouro(searchByCep.getLogradouro());
+            address.setBairro(searchByCep.getBairro());
+            address.setCidade(searchByCep.getLocalidade());
+            address.setUf(searchByCep.getUf());
+            address.setComplemento(form.getComplemento());
+            address.setNumero(form.getNumero());
+            save(address, form);
+
+        } catch (ResourceNotFoundException e) {
+            log.error(e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+        } catch (RequestException e) {
+            log.error(e.getMessage());
+            throw new RequestException(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Could not update address. " + e.getMessage());
+            throw new RequestException("Could not update address.");
+        }
+    }
+
+
     private void save(Address address, AddressForm form) {
         //getAddressTemplate already verifies the length of a cep, and therefore, it cannot be null.
         if (form.getNumero() == null) {
-            log.error("Address number must not be null.");
-            throw new RequestException("Address number must not be null.");
+            log.error(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
+            throw new RequestException(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
+        }
+        repository.save(address);
+    }
+
+    private void save(Address address, AddressUpdateForm form) {
+        //getAddressTemplate already verifies the length of a cep, and therefore, it cannot be null.
+        if (form.getNumero() == null) {
+            log.error(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
+            throw new RequestException(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
         }
         repository.save(address);
     }

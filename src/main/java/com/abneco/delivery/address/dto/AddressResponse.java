@@ -2,12 +2,12 @@ package com.abneco.delivery.address.dto;
 
 import lombok.*;
 
-@Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddressResponse {
+
+    private String addressId;
     private String userId;
     private String cep;
     private String logradouro;

@@ -64,6 +64,7 @@ public class Address {
 
     public AddressResponse toResponse(String userId) {
         AddressResponse response = new AddressResponse();
+        response.setAddressId(this.id);
         response.setUserId(userId);
         response.setCep(this.cep);
         response.setLogradouro(this.logradouro);
