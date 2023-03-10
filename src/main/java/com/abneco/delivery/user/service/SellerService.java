@@ -41,15 +41,21 @@ public class SellerService {
 
     public void registerSeller(SellerForm form) {
         try {
-            Optional<Seller> optionalUser = repository.findByEmail(form.getEmail());
-            if (optionalUser.isPresent()) {
+            Optional<Seller> optionalUserEmail = repository.findByEmail(form.getEmail());
+            Optional<Seller> optionalUserCnpj = repository.findByCnpj(form.getCnpj());
+            if (optionalUserEmail.isPresent()) {
                 throw new RequestException("Email already in use.");
             }
+            if (optionalUserCnpj.isPresent()) {
+                throw new RequestException("Cnpj already in use.");
+            }
+
             save(SellerMapper.fromFormToSellerEntity(form), form);
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new RequestException("Could not register seller.");
         }

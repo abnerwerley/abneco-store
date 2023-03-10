@@ -18,6 +18,11 @@ public class MockSellerRepository implements SellerRepository {
         return Optional.empty();
     }
 
+    @Override
+    public Optional<Seller> findByCnpj(String cnpj) {
+        return Optional.empty();
+    }
+
     public Optional<Seller> findByEmail() {
         return Optional.of(new Seller());
     }

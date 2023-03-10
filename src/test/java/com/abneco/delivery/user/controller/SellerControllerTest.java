@@ -1,6 +1,5 @@
 package com.abneco.delivery.user.controller;
 
-
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
@@ -65,7 +64,23 @@ class SellerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Email already in use."));
 
-        Seller seller = repository.findByEmail(EMAIL2).get();
+        Seller seller = repository.findByEmail(form.getEmail()).get();
+        repository.deleteById(seller.getId());
+    }
+
+    @Test
+    void test_register_seller_cnpj_already_in_use() throws Exception {
+        SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
+        JuridicalPerson user = new JuridicalPerson(EMAIL, form.getCnpj(), NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
+        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+
+        mockMvc.perform(post("/seller")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value("Cnpj already in use."));
+
+        Seller seller = repository.findByCnpj(form.getCnpj()).get();
         repository.deleteById(seller.getId());
     }
 

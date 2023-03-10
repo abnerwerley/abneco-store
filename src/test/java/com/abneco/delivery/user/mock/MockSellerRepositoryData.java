@@ -17,6 +17,11 @@ public class MockSellerRepositoryData implements SellerRepository {
     }
 
     @Override
+    public Optional<Seller> findByCnpj(String cnpj) {
+        return Optional.empty();
+    }
+
+    @Override
     public List<Seller> findAll() {
         return null;
     }
