@@ -41,4 +41,10 @@ public class AddressController {
     public void updateAddress(@RequestBody AddressUpdateForm form) {
         service.updateAddress(form);
     }
+
+    @DeleteMapping("/{addressId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAddressById(@PathVariable String addressId) {
+        service.deleteAddressById(addressId);
+    }
 }

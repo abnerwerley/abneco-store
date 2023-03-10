@@ -30,6 +30,7 @@ public class AddressSteps {
     public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
     public static final String COMPLEMENTO = "";
+    private String address_id;
 
 
     @Before
@@ -123,5 +124,22 @@ public class AddressSteps {
     @Then("all addresses should be returned")
     public void all_addresses_are_returned() {
         assertDoesNotThrow(() -> controller.getAllAddresses());
+    }
+
+    //Scenario: deleting user address
+
+    @Given("an address id")
+    public void an_address_id() {
+        this.address_id = "adkshdiodiyuqiwuhlkcbv,xm";
+    }
+
+    @When("request is made to delete address by id given")
+    public void request_to_delete_address_by_id() {
+        controller.deleteAddressById(address_id);
+    }
+
+    @Then("address is deleted")
+    public void address_is_deleted() {
+        assertDoesNotThrow(() -> controller.deleteAddressById(address_id));
     }
 }
