@@ -13,4 +13,7 @@ public interface SellerRepository extends JpaRepository<Seller, String> {
 
     @Query("select s from SELLER as s where email=:email")
     Optional<Seller> findByEmail(@Param("email") String email);
+
+    @Query("select s from SELLER as s where cnpj=:cnpj")
+    Optional<Seller> findByCnpj(@Param("cnpj") String cnpj);
 }

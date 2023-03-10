@@ -3,13 +3,14 @@ package com.abneco.delivery.address.service;
 import com.abneco.delivery.address.dto.AddressForm;
 import com.abneco.delivery.address.dto.AddressResponse;
 import com.abneco.delivery.address.dto.AddressTO;
+import com.abneco.delivery.address.dto.AddressUpdateForm;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.repository.SellerRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +39,10 @@ class AddressServiceTest {
 
     public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
+    private static final String NEW_CEP = "69312349";
+    public static final String NOVO_COMPLEMENTO = "lado impar";
+    public static final Integer NOVO_NUMERO = 15;
+
     public static final String CEP_NUMBERS = "04555000";
     public static final String CEP_9 = "123456789";
     public static final String CEP_LETTER = "04555A00";
@@ -46,8 +51,8 @@ class AddressServiceTest {
     public static final JuridicalPerson JURIDICAL_PERSON = new JuridicalPerson("email.@gmail.com", "12345678123456", "Abneco Delivery", "12345678", 11908765132L, false);
     public static final Seller SELLER = new Seller("kasdjlfkajsçdlkfjalçkdjfalkdjf", JURIDICAL_PERSON, "", "");
     public static final AddressForm ADDRESS_FORM = new AddressForm("kasdjlfkajsçdlkfjalçkdjfalkdjf", "12345678", "", 24);
-
     public static final Address ADDRESS = new Address(SELLER, ADDRESS_FORM, "rua tal", "jardim do meu endereço", "cidade exemplo", "RJ");
+    public static final String ADDRESS_ID = "calskdjfalkjdfclakncldjaojidfasdflj";
 
     @Test
     void testGetAddress() {
@@ -71,7 +76,7 @@ class AddressServiceTest {
     void testGetAddressCepEmptyString() {
         RestTemplate restTemplate = new RestTemplate();
         AddressService service = new AddressService(restTemplate);
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.getAddressTemplate(""));
+        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(""));
         assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
     }
 
@@ -79,7 +84,7 @@ class AddressServiceTest {
     void testGetAddressCepNineNumbers() {
         RestTemplate restTemplate = new RestTemplate();
         AddressService service = new AddressService(restTemplate);
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_9));
+        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_9));
         assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
     }
 
@@ -87,7 +92,7 @@ class AddressServiceTest {
     void testGetAddressCepWithLetterAmid() {
         RestTemplate restTemplate = new RestTemplate();
         AddressService service = new AddressService(restTemplate);
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_LETTER));
+        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_LETTER));
         assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
     }
 
@@ -109,8 +114,8 @@ class AddressServiceTest {
         when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
-        Assertions.assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
+        Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
+        assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
         verify(repository, never()).save(any(Address.class));
     }
 
@@ -123,8 +128,8 @@ class AddressServiceTest {
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, NUMERO);
 
         when(repository.save(any(Address.class))).thenThrow(RuntimeException.class);
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
-        Assertions.assertEquals("Could not register address by cep.", exception.getMessage());
+        Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
+        assertEquals("Could not register address by cep.", exception.getMessage());
     }
 
     @Test
@@ -135,8 +140,8 @@ class AddressServiceTest {
 
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, null);
 
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
-        Assertions.assertEquals("Address number must not be null.", exception.getMessage());
+        Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
+        assertEquals("Address number must not be null.", exception.getMessage());
     }
 
     @Test
@@ -153,5 +158,46 @@ class AddressServiceTest {
         List<AddressResponse> response = service.getAllAddresses();
         assertEquals(0, response.size());
         verify(repository).findAll();
+    }
+
+    @Test
+    void testUpdateAddress() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
+        when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(ADDRESS));
+        AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
+        service.updateAddress(updateAddressForm);
+        verify(sellerRepository).findById(SELLER_ID);
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository).save(any(Address.class));
+    }
+
+    @Test
+    void testUpdateAddressUserNotFound() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.empty());
+        AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateAddress(updateAddressForm));
+        assertNotNull(exception);
+        assertEquals("Seller not found.", exception.getMessage());
+        verify(sellerRepository).findById(SELLER_ID);
+        verify(repository, never()).save(any(Address.class));
+    }
+
+    @Test
+    void testUpdateAddressSellerNotFound() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
+        when(repository.findById(ADDRESS_ID)).thenReturn(Optional.empty());
+
+        AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateAddress(updateAddressForm));
+        assertNotNull(exception);
+        assertEquals("Address not found.", exception.getMessage());
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository, never()).save(any(Address.class));
     }
 }
