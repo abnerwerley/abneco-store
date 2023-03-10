@@ -34,4 +34,28 @@ public class Seller extends JuridicalPerson {
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
     }
+
+    public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt, Address address) {
+        this.id = id;
+        this.setEmail(user.getEmail());
+        this.setCnpj(user.getCnpj());
+        this.setName(user.getName());
+        this.setPassword(user.getPassword());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setEmailVerified(user.getEmailVerified());
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+        this.address = address;
+    }
+
+    public Seller(JuridicalPerson user, String createdAt, String updatedAt) {
+        this.setEmail(user.getEmail());
+        this.setCnpj(user.getCnpj());
+        this.setName(user.getName());
+        this.setPassword(user.getPassword());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setEmailVerified(user.getEmailVerified());
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+    }
 }

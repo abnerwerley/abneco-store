@@ -47,7 +47,7 @@ public class Address {
     private Integer numero;
 
     @OneToOne
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "seller_fk")
     private Seller seller;
 
 

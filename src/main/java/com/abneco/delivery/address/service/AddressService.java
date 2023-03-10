@@ -67,6 +67,9 @@ public class AddressService {
             if (seller.isEmpty()) {
                 throw new RequestException("User does not exist.");
             }
+            if (seller.get().getAddress() != null) {
+                throw new RequestException("User must only has one address.");
+            }
             AddressTO addressTO = getAddressTemplate(form.getCep());
             Address address = new Address();
             address.setSeller(seller.get());
@@ -83,6 +86,7 @@ public class AddressService {
             throw new RequestException(e.getMessage());
 
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("Could not register address by cep. " + e.getMessage());
             throw new RequestException("Could not register address by cep.");
         }
@@ -137,6 +141,14 @@ public class AddressService {
             log.error("Could not update address. " + e.getMessage());
             throw new RequestException("Could not update address.");
         }
+    }
+
+    public void deleteAddressById(String addressId) {
+        Optional<Address> optionalAddress = repository.findById(addressId);
+        if (optionalAddress.isEmpty()) {
+            throw new ResourceNotFoundException("Address not found.");
+        }
+        repository.deleteById(addressId);
     }
 
 

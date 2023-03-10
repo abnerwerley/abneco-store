@@ -53,6 +53,8 @@ class AddressServiceTest {
     public static final AddressForm ADDRESS_FORM = new AddressForm("kasdjlfkajsçdlkfjalçkdjfalkdjf", "12345678", "", 24);
     public static final Address ADDRESS = new Address(SELLER, ADDRESS_FORM, "rua tal", "jardim do meu endereço", "cidade exemplo", "RJ");
     public static final String ADDRESS_ID = "calskdjfalkjdfclakncldjaojidfasdflj";
+    public static final Seller SELLER_WITH_ADDRESS = new Seller("kasdjlfkajsçdlkfjalçkdjfalkdjf", JURIDICAL_PERSON, "", "", ADDRESS);
+
 
     @Test
     void testGetAddress() {
@@ -116,6 +118,18 @@ class AddressServiceTest {
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
         Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
         assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
+        verify(repository, never()).save(any(Address.class));
+    }
+
+    @Test
+    void testRegisterAddressByCepUserAlreadyHasAddress() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER_WITH_ADDRESS));
+
+        AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
+        Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
+        assertEquals("User must only has one address.", exception.getMessage());
         verify(repository, never()).save(any(Address.class));
     }
 
@@ -199,5 +213,23 @@ class AddressServiceTest {
         assertEquals("Address not found.", exception.getMessage());
         verify(repository).findById(ADDRESS_ID);
         verify(repository, never()).save(any(Address.class));
+    }
+
+    @Test
+    void testDeleteAddressById() {
+        when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(new Address()));
+        service.deleteAddressById(ADDRESS_ID);
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository).deleteById(ADDRESS_ID);
+    }
+
+    @Test
+    void testDeleteAddressByIdNotFound() {
+        when(repository.findById(ADDRESS_ID)).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteAddressById(ADDRESS_ID));
+        assertNotNull(exception);
+        assertEquals("Address not found.", exception.getMessage());
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository, never()).deleteById(ADDRESS_ID);
     }
 }

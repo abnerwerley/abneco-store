@@ -41,3 +41,12 @@ Feature: Address
   Scenario: getting all addresses
     When request is made to get all addresses
     Then all addresses should be returned
+
+#  As Abneco Delivery,
+#  I want any user to be able to delete their address.
+
+  Scenario: deleting user address
+    Given an address id
+    When request is made to delete address by id given
+    Then address is deleted
+
