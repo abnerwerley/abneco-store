@@ -42,7 +42,7 @@ public class AddressSteps {
         this.controller = new AddressController(service);
     }
 
-    //  Scenario: valid address data
+    // Scenario: register address with valid address data
     @Given("the following address data:")
     public void address_form_valid_fields(DataTable dataTable) {
 
@@ -68,7 +68,7 @@ public class AddressSteps {
     }
 
 
-    //  Scenario: invalid address data
+    // Scenario: register address with invalid address data
 
     @Given("the following invalid address data:")
     public void address_form_invalid_fields(DataTable dataTable) {
@@ -95,7 +95,7 @@ public class AddressSteps {
     }
 
 
-    //Scenario: null number in addressForm
+    // Scenario: register address with null number in addressForm
 
     @Given("the address form with null number")
     public void address_form_with_null_number() {

@@ -40,7 +40,7 @@ public class FeeStep {
         this.formNullCep = new CepForm(null);
     }
 
-    //valid cep scenario
+    //Scenario: request sent with a null cep
     @Given("valid cep")
     public void valid_cep() {
         new CepForm(CEP);
@@ -59,7 +59,7 @@ public class FeeStep {
         assertEquals("SP", response.getEstado());
     }
 
-    //invalid cep scenario
+    //Scenario: request sent with an invalid cep
     @Given("invalid cep")
     public void invalid_cep() {
         new CepForm(CEP);
@@ -77,7 +77,7 @@ public class FeeStep {
         assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
     }
 
-    //null cep scenario
+    //Scenario: request sent with a valid cep
     @Given("null cep")
     public void null_cep() {
         new CepForm(CEP);
