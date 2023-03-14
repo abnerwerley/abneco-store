@@ -1,9 +1,9 @@
 package com.abneco.delivery.user.controller;
 
-import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.service.SellerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +27,17 @@ class SellerControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
+    private SellerService service;
+
+    @Autowired
     private SellerRepository repository;
 
-    public static final String ID = "lkajsçdlgnçblkdrt98709lsdkjfn,manfg";
     public static final String EMAIL = "email.string@email.com";
     public static final String EMAIL2 = "email2.string@email.com";
     public static final String CNPJ = "12348765324123";
     public static final String NAME = "seller1";
     public static final String PASSWORD = "12345678";
     public static final Long PHONE_NUMBER = 11987654321L;
-    public static final Boolean EMAIL_VERIFIED = false;
-    public static final String CREATED_AT = "";
-    public static final String UPDATED_AT = null;
 
     @Test
     void test_register_seller() throws Exception {
@@ -54,9 +53,9 @@ class SellerControllerTest {
 
     @Test
     void test_register_seller_email_already_in_use() throws Exception {
-        SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        JuridicalPerson user = new JuridicalPerson(form.getEmail(), CNPJ, NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
-        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+        SellerForm formToBeSaved = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
+        SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
+        service.registerSeller(formToBeSaved);
 
         mockMvc.perform(post("/seller")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -64,15 +63,15 @@ class SellerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Email already in use."));
 
-        Seller seller = repository.findByEmail(form.getEmail()).get();
+        Seller seller = repository.findByEmail(formToBeSaved.getEmail()).get();
         repository.deleteById(seller.getId());
     }
 
     @Test
     void test_register_seller_cnpj_already_in_use() throws Exception {
-        SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        JuridicalPerson user = new JuridicalPerson(EMAIL, form.getCnpj(), NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
-        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+        SellerForm formToBeSaved = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
+        SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
+        service.registerSeller(formToBeSaved);
 
         mockMvc.perform(post("/seller")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +79,7 @@ class SellerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Cnpj already in use."));
 
-        Seller seller = repository.findByCnpj(form.getCnpj()).get();
+        Seller seller = repository.findByCnpj(formToBeSaved.getCnpj()).get();
         repository.deleteById(seller.getId());
     }
 
@@ -97,8 +96,7 @@ class SellerControllerTest {
     @Test
     void test_get_all_sellers() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        JuridicalPerson user = new JuridicalPerson(form.getEmail(), CNPJ, NAME, PASSWORD, PHONE_NUMBER, EMAIL_VERIFIED);
-        repository.save(new Seller(ID, user, CREATED_AT, UPDATED_AT));
+        service.registerSeller(form);
 
         mockMvc.perform(get("/seller")
                         .accept(MediaType.APPLICATION_JSON))
