@@ -2,7 +2,7 @@ package com.abneco.delivery.fee.service;
 
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
 import com.abneco.delivery.fee.dto.FeeResponse;
-import com.abneco.delivery.address.dto.AddressTO;
+import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import lombok.AllArgsConstructor;

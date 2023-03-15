@@ -1,7 +1,7 @@
 package com.abneco.delivery.address.entity;
 
-import com.abneco.delivery.address.dto.AddressForm;
-import com.abneco.delivery.address.dto.AddressResponse;
+import com.abneco.delivery.address.json.AddressForm;
+import com.abneco.delivery.address.json.AddressResponse;
 import com.abneco.delivery.user.entity.Seller;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -64,15 +64,15 @@ public class Address {
 
     public AddressResponse toResponse(String userId) {
         AddressResponse response = new AddressResponse();
-        response.setAddressId(this.id);
+        response.setAddressId(getId());
         response.setUserId(userId);
-        response.setCep(this.cep);
-        response.setLogradouro(this.logradouro);
-        response.setComplemento(this.complemento);
-        response.setBairro(this.bairro);
-        response.setCidade(this.cidade);
-        response.setNumero(this.numero);
-        response.setUf(this.uf);
+        response.setCep(getCep());
+        response.setLogradouro(getLogradouro());
+        response.setComplemento(getComplemento());
+        response.setBairro(getBairro());
+        response.setCidade(getCidade());
+        response.setNumero(getNumero());
+        response.setUf(getUf());
         return response;
     }
 

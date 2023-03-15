@@ -1,8 +1,8 @@
 package com.abneco.delivery.address.controller;
 
-import com.abneco.delivery.address.dto.AddressForm;
-import com.abneco.delivery.address.dto.AddressResponse;
-import com.abneco.delivery.address.dto.AddressUpdateForm;
+import com.abneco.delivery.address.json.AddressForm;
+import com.abneco.delivery.address.json.AddressResponse;
+import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.service.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

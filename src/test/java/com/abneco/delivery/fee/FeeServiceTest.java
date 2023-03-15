@@ -1,6 +1,6 @@
 package com.abneco.delivery.fee;
 
-import com.abneco.delivery.address.dto.AddressTO;
+import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
