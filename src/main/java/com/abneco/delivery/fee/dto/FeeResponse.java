@@ -1,6 +1,6 @@
 package com.abneco.delivery.fee.dto;
 
-import com.abneco.delivery.address.dto.AddressTO;
+import com.abneco.delivery.address.json.AddressTO;
 import lombok.*;
 
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
 package com.abneco.delivery.address.mock;
 
-import com.abneco.delivery.address.dto.AddressForm;
+import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.user.entity.JuridicalPerson;

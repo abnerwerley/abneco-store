@@ -1,9 +1,9 @@
 package com.abneco.delivery.address.service;
 
-import com.abneco.delivery.address.dto.AddressForm;
-import com.abneco.delivery.address.dto.AddressResponse;
-import com.abneco.delivery.address.dto.AddressTO;
-import com.abneco.delivery.address.dto.AddressUpdateForm;
+import com.abneco.delivery.address.json.AddressForm;
+import com.abneco.delivery.address.json.AddressResponse;
+import com.abneco.delivery.address.json.AddressTO;
+import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;

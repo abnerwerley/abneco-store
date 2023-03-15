@@ -1,6 +1,7 @@
 package com.abneco.delivery.user.entity;
 
 import com.abneco.delivery.address.entity.Address;
+import com.abneco.delivery.user.json.SellerResponse;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -57,5 +58,17 @@ public class Seller extends JuridicalPerson {
         this.setEmailVerified(user.getEmailVerified());
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
+    }
+
+    public SellerResponse toResponse() {
+        return SellerResponse.builder()
+                .id(getId())
+                .name(getName())
+                .email(getEmail())
+                .phoneNumber(getPhoneNumber())
+                .cnpj(getCnpj())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
     }
 }

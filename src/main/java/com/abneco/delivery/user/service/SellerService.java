@@ -3,11 +3,9 @@ package com.abneco.delivery.user.service;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.entity.mapper.SellerMapper;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.json.SellerResponse;
 import com.abneco.delivery.user.json.SellerUpdateForm;
-import com.abneco.delivery.user.json.mapper.SellerResponseMapper;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
@@ -50,7 +48,7 @@ public class SellerService {
                 throw new RequestException("Cnpj already in use.");
             }
 
-            save(SellerMapper.fromFormToSellerEntity(form), form);
+            save(form.toEntity(), form);
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
@@ -95,7 +93,7 @@ public class SellerService {
             if (optionalSeller.isEmpty()) {
                 throw new ResourceNotFoundException(SELLER_NOT_FOUND);
             }
-            return SellerResponseMapper.fromEntityToResponse(optionalSeller.get());
+            return optionalSeller.get().toResponse();
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -109,7 +107,7 @@ public class SellerService {
         List<Seller> sellers = repository.findAll();
         List<SellerResponse> response = new ArrayList<>();
         for (Seller seller : sellers) {
-            response.add(SellerResponseMapper.fromEntityToResponse(seller));
+            response.add(seller.toResponse());
         }
         return response;
     }

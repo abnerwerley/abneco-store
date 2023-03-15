@@ -1,4 +1,4 @@
-package com.abneco.delivery.address.dto;
+package com.abneco.delivery.address.json;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
