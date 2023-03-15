@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public class MockProductRepository implements ProductRepository {
     @Override
-    public Optional<Product> findBySellerId(String sellerId) {
-        return Optional.empty();
+    public List<Product> findBySellerId(String sellerId) {
+        return List.of();
     }
 
     @Override
