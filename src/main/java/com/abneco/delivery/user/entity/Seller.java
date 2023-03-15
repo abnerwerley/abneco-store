@@ -1,11 +1,13 @@
 package com.abneco.delivery.user.entity;
 
 import com.abneco.delivery.address.entity.Address;
+import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.user.json.SellerResponse;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +25,9 @@ public class Seller extends JuridicalPerson {
 
     @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL)
     private Address address;
+
+    @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Product> products;
 
     public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt) {
         this.id = id;
