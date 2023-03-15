@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -30,6 +32,7 @@ public class SellerForm {
         seller.setEmailVerified(false);
         seller.setUpdatedAt(DateFormatter.formatNow());
         seller.setCreatedAt(DateFormatter.formatNow());
+        seller.setProducts(new ArrayList<>());
 
         return seller;
     }
