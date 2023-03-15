@@ -9,7 +9,6 @@ import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.user.service.SellerService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ class AddressControllerTest {
 
     @Autowired
     private SellerRepository sellerRepository;
-    public static final String EMAIL = "email2.string@email.com";
+    public static final String EMAIL = "email@email.com";
     public static final String CNPJ = "12348765324123";
     public static final String NAME = "seller1";
     public static final String PASSWORD = "12345678";
@@ -92,6 +91,7 @@ class AddressControllerTest {
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
     }
+
     @Test
     void test_delete_address_by_id_not_found() throws Exception {
         mockMvc.perform(delete("/address/1")
@@ -185,6 +185,7 @@ class AddressControllerTest {
 
         sellerRepository.deleteById(seller.getId());
     }
+
     @Test
     void test_update_address_user_not_found() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
@@ -203,6 +204,7 @@ class AddressControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.detail").value("Seller not found."));
 
+        repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
     }
 }

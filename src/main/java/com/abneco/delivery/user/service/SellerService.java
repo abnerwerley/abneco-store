@@ -61,7 +61,7 @@ public class SellerService {
         }
     }
 
-    public SellerResponse updateSeller(SellerUpdateForm form) {
+    public void updateSeller(SellerUpdateForm form) {
         try {
             Optional<Seller> optionalUser = repository.findById(form.getId());
             if (optionalUser.isEmpty()) {
@@ -74,7 +74,6 @@ public class SellerService {
             seller.setCnpj(form.getCnpj());
             seller.setUpdatedAt(DateFormatter.formatNow());
             save(seller, form);
-            return SellerResponseMapper.fromEntityToResponse(seller);
 
         } catch (ResourceNotFoundException e) {
             log.error("Seller not found: " + e.getMessage());

@@ -2,6 +2,7 @@ package com.abneco.delivery.user.repository;
 
 import com.abneco.delivery.user.entity.Seller;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,4 +17,8 @@ public interface SellerRepository extends JpaRepository<Seller, String> {
 
     @Query("select s from SELLER as s where cnpj=:cnpj")
     Optional<Seller> findByCnpj(@Param("cnpj") String cnpj);
+
+    @Modifying
+    @Query("delete from SELLER where seller_id=:seller_id")
+    void deleteById(@Param("seller_id") String sellerId);
 }

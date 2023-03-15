@@ -30,8 +30,8 @@ public class SellerController {
 
     @PutMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public SellerResponse updateSeller(@RequestBody SellerUpdateForm form) {
-        return service.updateSeller(form);
+    public void updateSeller(@RequestBody SellerUpdateForm form) {
+        service.updateSeller(form);
     }
 
     @GetMapping("/{id}")

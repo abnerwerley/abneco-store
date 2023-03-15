@@ -142,11 +142,7 @@ class SellerServiceTest {
     void testUpdateSeller() {
         SellerUpdateForm form = new SellerUpdateForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         doReturn(optionalSeller()).when(repository).findById(ID);
-        SellerResponse response = service.updateSeller(form);
-        assertNotNull(response);
-        assertEquals("Name", response.getName());
-        assertEquals(NEW_EMAIL, response.getEmail());
-        assertEquals(NEW_CNPJ, response.getCnpj());
+        service.updateSeller(form);
         verify(repository).findById(ID);
         verify(repository).save(any(Seller.class));
     }
