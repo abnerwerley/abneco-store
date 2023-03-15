@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.NoSuchElementException;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -47,7 +49,8 @@ class SellerControllerTest {
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isCreated());
 
-        Seller seller = repository.findByEmail(EMAIL).get();
+        Seller seller = repository.findByEmail(form.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
         repository.deleteById(seller.getId());
     }
 
@@ -63,7 +66,8 @@ class SellerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Email already in use."));
 
-        Seller seller = repository.findByEmail(formToBeSaved.getEmail()).get();
+        Seller seller = repository.findByEmail(formToBeSaved.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
         repository.deleteById(seller.getId());
     }
 
@@ -79,7 +83,8 @@ class SellerControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("Cnpj already in use."));
 
-        Seller seller = repository.findByCnpj(formToBeSaved.getCnpj()).get();
+        Seller seller = repository.findByCnpj(formToBeSaved.getCnpj())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
         repository.deleteById(seller.getId());
     }
 
@@ -102,7 +107,8 @@ class SellerControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        Seller seller = repository.findByEmail(EMAIL2).get();
+        Seller seller = repository.findByEmail(form.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
         repository.deleteById(seller.getId());
     }
 
@@ -117,7 +123,8 @@ class SellerControllerTest {
     void test_get_seller_by_id_success() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
         service.registerSeller(form);
-        Seller seller = repository.findByEmail(EMAIL2).get();
+        Seller seller = repository.findByEmail(EMAIL2)
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         mockMvc.perform(get("/seller/" + seller.getId())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -142,7 +149,8 @@ class SellerControllerTest {
     void test_delete_seller_by_id_success() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
         service.registerSeller(form);
-        Seller seller = repository.findByEmail(EMAIL2).get();
+        Seller seller = repository.findByEmail(form.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         mockMvc.perform(delete("/seller/" + seller.getId())
                         .contentType(MediaType.APPLICATION_JSON))
@@ -163,7 +171,8 @@ class SellerControllerTest {
     void test_update_seller_success() throws Exception {
         SellerForm formToBeSaved = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
         service.registerSeller(formToBeSaved);
-        Seller seller = repository.findByEmail(formToBeSaved.getEmail()).get();
+        Seller seller = repository.findByEmail(formToBeSaved.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         SellerUpdateForm form = new SellerUpdateForm(seller.getId(), "new name", EMAIL, 1798701234L, "12349876123456");
 

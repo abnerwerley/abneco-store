@@ -17,6 +17,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.NoSuchElementException;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -53,11 +55,13 @@ class AddressControllerTest {
     void test_get_all_addresses() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(get("/address")
                         .accept(MediaType.APPLICATION_JSON))
@@ -78,11 +82,13 @@ class AddressControllerTest {
     void test_delete_address_by_id() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(delete("/address/" + address.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -103,7 +109,8 @@ class AddressControllerTest {
     void test_register_address_success() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
 
@@ -112,7 +119,8 @@ class AddressControllerTest {
                         .content(objectMapper.writeValueAsString(addressForm)))
                 .andExpect(status().isCreated());
 
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
     }
@@ -132,7 +140,8 @@ class AddressControllerTest {
     void test_register_address_user_already_has_address() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
@@ -143,7 +152,8 @@ class AddressControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("User must only has one address."));
 
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
     }
@@ -152,11 +162,13 @@ class AddressControllerTest {
     void test_update_address_success() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         AddressUpdateForm form = new AddressUpdateForm(address.getId(), seller.getId(), "79116070", "Lado par", 321);
 
@@ -173,7 +185,8 @@ class AddressControllerTest {
     void test_update_address_address_not_found() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressUpdateForm form = new AddressUpdateForm("ajçdkjfaçkdn,cmvnlkjdfaçljkdfpoiuret", seller.getId(), "79116070", "Lado par", 321);
 
@@ -190,11 +203,13 @@ class AddressControllerTest {
     void test_update_address_user_not_found() throws Exception {
         SellerForm sellerForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         sellerService.registerSeller(sellerForm);
-        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail()).get();
+        Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
+                .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId()).get();
+        Address address = repository.findBySellerId(seller.getId())
+                .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         AddressUpdateForm form = new AddressUpdateForm(address.getId(), "ajçdkjfaçkdn,cmvnlkjdfaçljkdfpoiuret", "79116070", "Lado par", 321);
 
