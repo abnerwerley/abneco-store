@@ -5,7 +5,7 @@ import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.SellerUpdateForm;
+import com.abneco.delivery.user.json.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
@@ -14,12 +14,13 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -59,7 +60,7 @@ public class SellerService {
         }
     }
 
-    public void updateSeller(SellerUpdateForm form) {
+    public void updateSeller(UpdateSellerForm form) {
         try {
             Optional<Seller> optionalUser = repository.findById(form.getId());
             if (optionalUser.isEmpty()) {
@@ -104,12 +105,15 @@ public class SellerService {
     }
 
     public List<SellerResponse> findAllSellers() {
-        List<Seller> sellers = repository.findAll();
-        List<SellerResponse> response = new ArrayList<>();
-        for (Seller seller : sellers) {
-            response.add(seller.toResponse());
+        try {
+            List<Seller> sellers = repository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
+            return sellers.stream()
+                    .map(Seller::toResponse)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Could not get all sellers. " + e.getMessage());
+            throw new RequestException("Could not get all sellers.");
         }
-        return response;
     }
 
     public void deleteSellerById(String id) {
@@ -135,7 +139,7 @@ public class SellerService {
         repository.save(seller);
     }
 
-    private void save(Seller seller, SellerUpdateForm form) {
+    private void save(Seller seller, UpdateSellerForm form) {
         ValidateSeller.validateSeller(form);
         repository.save(seller);
     }

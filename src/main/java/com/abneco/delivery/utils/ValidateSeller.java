@@ -2,7 +2,7 @@ package com.abneco.delivery.utils;
 
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.SellerUpdateForm;
+import com.abneco.delivery.user.json.UpdateSellerForm;
 
 public class ValidateSeller {
 
@@ -19,7 +19,7 @@ public class ValidateSeller {
         }
     }
 
-    public static void validateSeller(SellerUpdateForm form) {
+    public static void validateSeller(UpdateSellerForm form) {
         ValidateEmail.validateEmail(form.getEmail());
         if (form.getCnpj() == null || form.getCnpj().length() != 14) {
             throw new RequestException("Cnpj must have 14 numbers, and numbers only.");

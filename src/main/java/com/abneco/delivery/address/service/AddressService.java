@@ -1,10 +1,10 @@
 package com.abneco.delivery.address.service;
 
+import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressResponse;
 import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.json.AddressUpdateForm;
-import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
@@ -19,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Setter
@@ -40,10 +40,6 @@ public class AddressService {
 
     public AddressService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-    }
-
-    public AddressService(AddressRepository repository) {
-        this.repository = repository;
     }
 
     public static final String ADDRESS_NUMBER_NOT_NULL_MESSAGE = "Address number must not be null.";
@@ -81,7 +77,7 @@ public class AddressService {
             address.setUf(addressTO.getUf());
             address.setNumero(form.getNumero());
 
-            save(address, form);
+            save(address);
         } catch (RequestException e) {
             throw new RequestException(e.getMessage());
 
@@ -95,12 +91,10 @@ public class AddressService {
     public List<AddressResponse> getAllAddresses() {
         try {
             List<Address> addresses = repository.findAll();
-            List<AddressResponse> response = new ArrayList<>();
-            for (Address address : addresses) {
-                AddressResponse responseTo = address.toResponse(address.getSeller().getId());
-                response.add(responseTo);
-            }
-            return response;
+            return addresses.stream()
+                    .map(address -> address.toResponse(address.getSeller().getId()))
+                    .collect(Collectors.toList());
+
         } catch (Exception e) {
             log.error("Could not get all addresses. " + e.getMessage());
             throw new RequestException("Could not get all addresses.");
@@ -128,7 +122,7 @@ public class AddressService {
             address.setUf(searchByCep.getUf());
             address.setComplemento(form.getComplemento());
             address.setNumero(form.getNumero());
-            save(address, form);
+            save(address);
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -151,19 +145,9 @@ public class AddressService {
         repository.deleteById(addressId);
     }
 
-
-    private void save(Address address, AddressForm form) {
+    private void save(Address address) {
         //getAddressTemplate already verifies the length of a cep, and therefore, it cannot be null.
-        if (form.getNumero() == null) {
-            log.error(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
-            throw new RequestException(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
-        }
-        repository.save(address);
-    }
-
-    private void save(Address address, AddressUpdateForm form) {
-        //getAddressTemplate already verifies the length of a cep, and therefore, it cannot be null.
-        if (form.getNumero() == null) {
+        if (address.getNumero() == null) {
             log.error(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
             throw new RequestException(ADDRESS_NUMBER_NOT_NULL_MESSAGE);
         }

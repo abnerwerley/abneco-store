@@ -2,7 +2,7 @@ package com.abneco.delivery.user.controller;
 
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.SellerUpdateForm;
+import com.abneco.delivery.user.json.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.user.service.SellerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -129,7 +129,7 @@ class SellerControllerTest {
         mockMvc.perform(get("/seller/" + seller.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(form.getName()))
+                .andExpect(jsonPath("$.name").value("Seller1"))
                 .andExpect(jsonPath("$.email").value(form.getEmail()))
                 .andExpect(jsonPath("$.phoneNumber").value(form.getPhoneNumber()))
                 .andExpect(jsonPath("$.cnpj").value(form.getCnpj()));
@@ -174,7 +174,7 @@ class SellerControllerTest {
         Seller seller = repository.findByEmail(formToBeSaved.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
-        SellerUpdateForm form = new SellerUpdateForm(seller.getId(), "new name", EMAIL, 1798701234L, "12349876123456");
+        UpdateSellerForm form = new UpdateSellerForm(seller.getId(), "new name", EMAIL, 1798701234L, "12349876123456");
 
         mockMvc.perform(put("/seller")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -186,7 +186,7 @@ class SellerControllerTest {
 
     @Test
     void test_update_seller_not_found() throws Exception {
-        SellerUpdateForm form = new SellerUpdateForm("id", "new name", EMAIL, 1798701234L, "12349876123456");
+        UpdateSellerForm form = new UpdateSellerForm("id", "new name", EMAIL, 1798701234L, "12349876123456");
 
         mockMvc.perform(put("/seller")
                         .contentType(MediaType.APPLICATION_JSON)

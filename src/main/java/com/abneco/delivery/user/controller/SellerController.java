@@ -2,7 +2,7 @@ package com.abneco.delivery.user.controller;
 
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.SellerUpdateForm;
+import com.abneco.delivery.user.json.UpdateSellerForm;
 import com.abneco.delivery.user.service.SellerService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -30,7 +30,7 @@ public class SellerController {
 
     @PutMapping("")
     @ResponseStatus(HttpStatus.OK)
-    public void updateSeller(@RequestBody SellerUpdateForm form) {
+    public void updateSeller(@RequestBody UpdateSellerForm form) {
         service.updateSeller(form);
     }
 
