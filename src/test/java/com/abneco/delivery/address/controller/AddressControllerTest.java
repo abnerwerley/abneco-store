@@ -1,8 +1,8 @@
 package com.abneco.delivery.address.controller;
 
+import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressUpdateForm;
-import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.user.entity.Seller;

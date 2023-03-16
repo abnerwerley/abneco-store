@@ -5,7 +5,7 @@ import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.json.SellerForm;
 import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.SellerUpdateForm;
+import com.abneco.delivery.user.json.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -140,7 +141,7 @@ class SellerServiceTest {
 
     @Test
     void testUpdateSeller() {
-        SellerUpdateForm form = new SellerUpdateForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
+        UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         doReturn(optionalSeller()).when(repository).findById(ID);
         service.updateSeller(form);
         verify(repository).findById(ID);
@@ -149,7 +150,7 @@ class SellerServiceTest {
 
     @Test
     void testUpdateSellerSellerNotFound() {
-        SellerUpdateForm form = new SellerUpdateForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
+        UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         when(repository.findById(ID)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateSeller(form));
         assertNotNull(exception);
@@ -158,7 +159,7 @@ class SellerServiceTest {
 
     @Test
     void testUpdateSellerRequestException() {
-        SellerUpdateForm nullNameForm = new SellerUpdateForm(ID, SHORT_NAME, EMAIL, PHONE_NUMBER, CNPJ);
+        UpdateSellerForm nullNameForm = new UpdateSellerForm(ID, SHORT_NAME, EMAIL, PHONE_NUMBER, CNPJ);
         when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller()));
         Exception nullName = assertThrows(RequestException.class, () -> service.updateSeller(nullNameForm));
         assertNotNull(nullName);
@@ -168,7 +169,7 @@ class SellerServiceTest {
 
     @Test
     void testUpdateSellerException() {
-        SellerUpdateForm form = new SellerUpdateForm(ID, NAME, EMAIL, PHONE_NUMBER, CNPJ);
+        UpdateSellerForm form = new UpdateSellerForm(ID, NAME, EMAIL, PHONE_NUMBER, CNPJ);
         when(repository.findById(form.getId())).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
         assertNotNull(exception);
@@ -233,10 +234,18 @@ class SellerServiceTest {
 
     @Test
     void testFindAllSellers() {
-        when(repository.findAll()).thenReturn(List.of(getSeller()));
+        when(repository.findAll((Sort.by(Sort.Direction.DESC, "updatedAt")))).thenReturn(List.of(getSeller()));
         List<SellerResponse> response = service.findAllSellers();
         assertNotNull(response);
         assertEquals(1, response.size());
+    }
+
+    @Test
+    void testFindAllSellersException() {
+        when(repository.findAll()).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.findAllSellers());
+        assertNotNull(exception);
+        assertEquals("Could not get all sellers.", exception.getMessage());
     }
 
     public Optional<Seller> optionalSeller() {

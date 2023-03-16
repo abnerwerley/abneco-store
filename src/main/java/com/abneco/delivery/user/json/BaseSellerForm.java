@@ -7,11 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class SellerUpdateForm {
+@NoArgsConstructor
+public class BaseSellerForm {
 
-    private String id;
     private String name;
     private String email;
     private Long phoneNumber;
