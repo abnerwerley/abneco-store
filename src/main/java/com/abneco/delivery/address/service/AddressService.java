@@ -68,7 +68,7 @@ public class AddressService {
             }
             AddressTO addressTO = getAddressTemplate(form.getCep());
             Address address = new Address();
-            address.setSeller(seller.get());
+            address.setUser(seller.get());
             address.setCep(form.getCep());
             address.setLogradouro(addressTO.getLogradouro());
             address.setComplemento(form.getComplemento());
@@ -92,7 +92,7 @@ public class AddressService {
         try {
             List<Address> addresses = repository.findAll();
             return addresses.stream()
-                    .map(address -> address.toResponse(address.getSeller().getId()))
+                    .map(address -> address.toResponse(address.getUser().getId()))
                     .collect(Collectors.toList());
 
         } catch (Exception e) {

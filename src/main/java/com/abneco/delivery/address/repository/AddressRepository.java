@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface AddressRepository extends JpaRepository<Address, String> {
 
-    Optional<Address> findBySellerId(String userId);
+    Optional<Address> findByUserId(String userId);
 
     @Modifying
     @Query("delete from ADDRESS where address_id=:addressId")

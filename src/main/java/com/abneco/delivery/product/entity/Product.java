@@ -33,7 +33,7 @@ public class Product {
     private BigDecimal price;
 
     @ManyToOne
-    @JoinColumn(name = "seller_fk")
+    @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
     private Seller seller;
 
     public Product(String name, String description, BigDecimal price, Seller seller) {

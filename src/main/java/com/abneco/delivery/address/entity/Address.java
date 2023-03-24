@@ -2,7 +2,7 @@ package com.abneco.delivery.address.entity;
 
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressResponse;
-import com.abneco.delivery.user.entity.Seller;
+import com.abneco.delivery.user.entity.User;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -47,12 +47,12 @@ public class Address {
     private Integer numero;
 
     @OneToOne
-    @JoinColumn(name = "seller_fk")
-    private Seller seller;
+    @JoinColumn(name = "user_fk")
+    private User user;
 
 
-    public Address(Seller user, AddressForm form, String logradouro, String bairro, String cidade, String uf) {
-        this.seller = user;
+    public Address(User user, AddressForm form, String logradouro, String bairro, String cidade, String uf) {
+        this.user = user;
         this.cep = form.getCep();
         this.logradouro = logradouro;
         this.complemento = form.getComplemento();

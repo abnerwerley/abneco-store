@@ -1,7 +1,7 @@
 package com.abneco.delivery.address.mock;
 
-import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.entity.Address;
+import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
@@ -18,7 +18,7 @@ public class AddressMockRepository implements AddressRepository {
 
 
     @Override
-    public Optional<Address> findBySellerId(String userId) {
+    public Optional<Address> findByUserId(String userId) {
         SellerForm sellerForm = new SellerForm("seller1", "email2.string@email.com", "12345678", 11987654321L, "12348765324123");
         JuridicalPerson user = new JuridicalPerson(sellerForm.getEmail(), "12348765324123", sellerForm.getName(), sellerForm.getPassword(), sellerForm.getPhoneNumber(), false);
         Seller seller = new Seller("lkajsçdlgnçblkdrt98709lsdkjfn,manfg", user, "", null);
