@@ -83,7 +83,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -115,7 +115,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -141,7 +141,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(get("/product/seller/" + seller.getId())
@@ -169,7 +169,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -207,7 +207,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -233,7 +233,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE_ZERO, seller.getId());
@@ -257,7 +257,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm productForm = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -296,7 +296,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, seller.getId());
@@ -320,7 +320,7 @@ class ProductControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         addressService.registerAddressByCep(addressForm);
-        Address address = addressRepository.findBySellerId(seller.getId())
+        Address address = addressRepository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(delete("/product/1")

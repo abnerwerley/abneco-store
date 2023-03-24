@@ -60,7 +60,7 @@ class AddressControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(get("/address")
@@ -87,7 +87,7 @@ class AddressControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         mockMvc.perform(delete("/address/" + address.getId())
@@ -119,7 +119,7 @@ class AddressControllerTest {
                         .content(objectMapper.writeValueAsString(addressForm)))
                 .andExpect(status().isCreated());
 
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
@@ -152,7 +152,7 @@ class AddressControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.detail").value("User must only has one address."));
 
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
@@ -167,7 +167,7 @@ class AddressControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         AddressUpdateForm form = new AddressUpdateForm(address.getId(), seller.getId(), "79116070", "Lado par", 321);
@@ -208,7 +208,7 @@ class AddressControllerTest {
 
         AddressForm addressForm = new AddressForm(seller.getId(), CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(addressForm);
-        Address address = repository.findBySellerId(seller.getId())
+        Address address = repository.findByUserId(seller.getId())
                 .orElseThrow(() -> new NoSuchElementException("Address not found"));
 
         AddressUpdateForm form = new AddressUpdateForm(address.getId(), "ajçdkjfaçkdn,cmvnlkjdfaçljkdfpoiuret", "79116070", "Lado par", 321);

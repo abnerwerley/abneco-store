@@ -4,9 +4,11 @@ import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.user.json.SellerResponse;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -17,20 +19,11 @@ import java.util.List;
 @Setter
 public class Seller extends JuridicalPerson {
 
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "seller_id")
-    private String id;
-
-    @OneToOne(mappedBy = "seller", cascade = CascadeType.ALL)
-    private Address address;
-
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt) {
-        this.id = id;
+        this.setId(id);
         this.setEmail(user.getEmail());
         this.setCnpj(user.getCnpj());
         this.setName(user.getName());
@@ -42,7 +35,7 @@ public class Seller extends JuridicalPerson {
     }
 
     public Seller(String id, JuridicalPerson user, String createdAt, String updatedAt, Address address) {
-        this.id = id;
+        this.setId(id);
         this.setEmail(user.getEmail());
         this.setCnpj(user.getCnpj());
         this.setName(user.getName());
@@ -51,7 +44,7 @@ public class Seller extends JuridicalPerson {
         this.setEmailVerified(user.getEmailVerified());
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
-        this.address = address;
+        this.setAddress(address);
     }
 
     public Seller(JuridicalPerson user, String createdAt, String updatedAt) {

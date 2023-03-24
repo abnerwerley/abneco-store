@@ -89,7 +89,7 @@ public class ProductService {
     public void registerProduct(ProductForm form) {
         try {
             Optional<Seller> optionalSeller = sellerRepository.findById(form.getSellerId());
-            Optional<Address> optionalAddress = addressRepository.findBySellerId(form.getSellerId());
+            Optional<Address> optionalAddress = addressRepository.findByUserId(form.getSellerId());
             if (optionalSeller.isEmpty()) {
                 throw new ResourceNotFoundException(SELLER_NOT_FOUND);
             }

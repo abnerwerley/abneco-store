@@ -128,7 +128,7 @@ class ProductServiceTest {
     void testRegisterProduct() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.of(new Address()));
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
         service.registerProduct(form);
         verify(sellerRepository).findById(form.getSellerId());
         verify(repository).save(any(Product.class));
@@ -138,7 +138,7 @@ class ProductServiceTest {
     void testRegisterProductSellerNotFound() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.empty());
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.of(new Address()));
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerProduct(form));
         assertEquals("Seller not found.", exception.getMessage());
 
@@ -150,7 +150,7 @@ class ProductServiceTest {
     void testRegisterProductAddressNotFound() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.empty());
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerProduct(form));
         assertEquals("One cannot register a product if you have no address.", exception.getMessage());
 
@@ -162,7 +162,7 @@ class ProductServiceTest {
     void testRegisterProductNullNameValidation() {
         ProductForm form = new ProductForm(null, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.of(new Address()));
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
 
         Exception exception = assertThrows(RequestException.class, () -> service.registerProduct(form));
         assertEquals("Product name must not be null.", exception.getMessage());
@@ -175,7 +175,7 @@ class ProductServiceTest {
     void testRegisterProductDescriptionValidation() {
         ProductForm form = new ProductForm(NAME, SHORT_DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.of(new Address()));
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
 
         Exception exception = assertThrows(RequestException.class, () -> service.registerProduct(form));
         assertEquals("Product Description must be at least 10 char long.", exception.getMessage());
@@ -188,7 +188,7 @@ class ProductServiceTest {
     void testRegisterProductPriceValidation() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE_ZERO, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
-        when(addressRepository.findBySellerId(form.getSellerId())).thenReturn(Optional.of(new Address()));
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
 
         Exception exception = assertThrows(RequestException.class, () -> service.registerProduct(form));
         assertEquals("Product price must neither be below 0.0, nor null.", exception.getMessage());

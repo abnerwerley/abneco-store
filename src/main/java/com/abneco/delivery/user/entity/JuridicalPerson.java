@@ -6,15 +6,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@MappedSuperclass
 public class JuridicalPerson extends User {
 
+    @NotNull
     @Column(name = "cnpj", unique = true)
     private String cnpj;
 

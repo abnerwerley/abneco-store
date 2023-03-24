@@ -1,10 +1,10 @@
 package com.abneco.delivery.address.service;
 
+import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressResponse;
 import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.json.AddressUpdateForm;
-import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;

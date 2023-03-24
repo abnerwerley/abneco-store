@@ -19,6 +19,6 @@ public interface SellerRepository extends JpaRepository<Seller, String> {
     Optional<Seller> findByCnpj(@Param("cnpj") String cnpj);
 
     @Modifying
-    @Query("delete from SELLER where seller_id=:seller_id")
-    void deleteById(@Param("seller_id") String sellerId);
+    @Query("delete from SELLER where id=:sellerId")
+    void deleteById(@Param("sellerId") String sellerId);
 }
