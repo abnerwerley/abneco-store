@@ -7,4 +7,4 @@ Como rodar o projeto:
 - Clonar o projeto para a sua máquina<br/>
    git clone https://github.com/abnerwerley/abneco-delivery
 - Ter uma ide para rodar o projeto pela classe main
-- Acessar a rota http://localhost:8081/swagger-ui/index.html#/ e testar a api
+- Acessar a rota http://localhost:8081 e testar a api
