@@ -1,6 +1,7 @@
 package com.abneco.delivery.product.entity;
 
 import com.abneco.delivery.product.json.ProductResponse;
+import com.abneco.delivery.purchase.entity.Purchase;
 import com.abneco.delivery.user.entity.Seller;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,6 +10,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -35,6 +38,9 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
     private Seller seller;
+
+    @OneToMany(mappedBy = "product")
+    private List<Purchase> purchases = new ArrayList<>();
 
     public Product(String name, String description, BigDecimal price, Seller seller) {
         this.name = name;
