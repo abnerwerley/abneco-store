@@ -1,6 +1,7 @@
 package com.abneco.delivery.user.entity;
 
 import com.abneco.delivery.purchase.entity.Purchase;
+import com.abneco.delivery.user.json.buyer.BuyerResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,8 +17,21 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+//@Inheritance
 public class Buyer extends NaturalPerson {
 
     @OneToMany(mappedBy = "buyer")
     private List<Purchase> purchases = new ArrayList<>();
+
+    public BuyerResponse toResponse() {
+        return BuyerResponse.builder()
+                .id(getId())
+                .name(getName())
+                .email(getEmail())
+                .phoneNumber(getPhoneNumber())
+                .cpf(getCpf())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
+    }
 }

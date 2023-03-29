@@ -2,7 +2,7 @@ package com.abneco.delivery.user.entity;
 
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.product.entity.Product;
-import com.abneco.delivery.user.json.SellerResponse;
+import com.abneco.delivery.user.json.seller.SellerResponse;
 import lombok.*;
 
 import javax.persistence.CascadeType;

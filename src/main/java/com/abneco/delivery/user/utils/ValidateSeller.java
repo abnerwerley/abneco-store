@@ -1,8 +1,8 @@
-package com.abneco.delivery.utils;
+package com.abneco.delivery.user.utils;
 
 import com.abneco.delivery.exception.RequestException;
-import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.UpdateSellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
+import com.abneco.delivery.user.json.seller.UpdateSellerForm;
 
 public class ValidateSeller {
 

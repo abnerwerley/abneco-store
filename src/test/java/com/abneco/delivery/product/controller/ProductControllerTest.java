@@ -10,7 +10,7 @@ import com.abneco.delivery.product.json.UpdateProductForm;
 import com.abneco.delivery.product.repository.ProductRepository;
 import com.abneco.delivery.product.service.ProductService;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.user.service.SellerService;
 import com.fasterxml.jackson.databind.ObjectMapper;

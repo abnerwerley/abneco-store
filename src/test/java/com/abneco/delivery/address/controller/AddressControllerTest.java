@@ -6,7 +6,7 @@ import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.user.service.SellerService;
 import com.fasterxml.jackson.databind.ObjectMapper;

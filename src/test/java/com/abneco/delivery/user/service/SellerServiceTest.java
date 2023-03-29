@@ -3,10 +3,12 @@ package com.abneco.delivery.user.service;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.UpdateSellerForm;
+import com.abneco.delivery.user.entity.User;
+import com.abneco.delivery.user.json.seller.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerResponse;
+import com.abneco.delivery.user.json.seller.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +32,9 @@ class SellerServiceTest {
     @Mock
     private SellerRepository repository;
 
+    @Mock
+    private UserRepository userRepository;
+
     public static final String ID = "iyu230hskdf-dfoi7-462c-a47f-7afaade01517";
     public static final String NAME = "Name";
     public static final String NEW_NAME = "name";
@@ -48,10 +53,10 @@ class SellerServiceTest {
     @Test
     void testRegisterSeller() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        when(repository.findByEmail(form.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
         service.registerSeller(form);
-        verify(repository).findByEmail(form.getEmail());
+        verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository).findByCnpj(form.getCnpj());
         verify(repository).save(any(Seller.class));
     }
@@ -59,23 +64,23 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerEmailAlreadyInUse() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        doReturn(optionalSeller()).when(repository).findByEmail(form.getEmail());
+        doReturn(optionalSeller()).when(userRepository).findUserByEmail(form.getEmail());
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
         assertNotNull(exception);
         assertEquals("Email already in use.", exception.getMessage());
-        verify(repository).findByEmail(form.getEmail());
+        verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
 
     @Test
     void testRegisterSellerCnpjAlreadyInUse() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        when(repository.findByEmail(form.getEmail())).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.of(new Seller()));
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
         assertNotNull(exception);
         assertEquals("Cnpj already in use.", exception.getMessage());
-        verify(repository).findByEmail(form.getEmail());
+        verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
 
@@ -91,7 +96,7 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerSaveValidations() {
         SellerForm shortCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, SHORT_CNPJ);
-        when(repository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail(shortCnpjForm.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(shortCnpjForm.getCnpj())).thenReturn(Optional.empty());
         Exception shortCnpj = assertThrows(RequestException.class, () -> service.registerSeller(shortCnpjForm));
         assertNotNull(shortCnpj);
@@ -134,7 +139,7 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerException() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        when(repository.findByEmail(EMAIL)).thenThrow(RuntimeException.class);
+        when(userRepository.findUserByEmail(EMAIL)).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
         assertEquals("Could not register seller.", exception.getMessage());
     }
@@ -143,6 +148,7 @@ class SellerServiceTest {
     void testUpdateSeller() {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         doReturn(optionalSeller()).when(repository).findById(ID);
+        when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
         service.updateSeller(form);
         verify(repository).findById(ID);
         verify(repository).save(any(Seller.class));
@@ -158,9 +164,32 @@ class SellerServiceTest {
     }
 
     @Test
+    void testUpdateSellerSellerEmailAlreadyInUse() {
+        UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
+        when(repository.findById(ID)).thenReturn(optionalSeller());
+        when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.of(new User()));
+        Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
+        assertNotNull(exception);
+        assertEquals("Email already in use.", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateSellerSellerCnpjAlreadyInUse() {
+        UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
+        when(repository.findById(ID)).thenReturn(optionalSeller());
+        when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.of(new Seller()));
+        when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
+        Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
+        assertNotNull(exception);
+        assertEquals("Cnpj already in use.", exception.getMessage());
+    }
+
+    @Test
     void testUpdateSellerRequestException() {
         UpdateSellerForm nullNameForm = new UpdateSellerForm(ID, SHORT_NAME, EMAIL, PHONE_NUMBER, CNPJ);
         when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller()));
+        when(repository.findByCnpj(nullNameForm.getCnpj())).thenReturn(Optional.empty());
         Exception nullName = assertThrows(RequestException.class, () -> service.updateSeller(nullNameForm));
         assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());

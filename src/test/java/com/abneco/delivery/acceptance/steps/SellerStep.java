@@ -3,9 +3,11 @@ package com.abneco.delivery.acceptance.steps;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.controller.SellerController;
-import com.abneco.delivery.user.json.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
 import com.abneco.delivery.user.mock.MockSellerRepository;
+import com.abneco.delivery.user.mock.MockUserRepository;
 import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.repository.UserRepository;
 import com.abneco.delivery.user.service.SellerService;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
@@ -31,7 +33,8 @@ public class SellerStep {
     @Before
     public void setup() {
         SellerRepository repository = new MockSellerRepository();
-        SellerService service = new SellerService(repository);
+        UserRepository userRepository = new MockUserRepository();
+        SellerService service = new SellerService(repository, userRepository);
         this.controller = new SellerController(service);
     }
 

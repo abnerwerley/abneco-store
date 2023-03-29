@@ -1,4 +1,4 @@
-package com.abneco.delivery.user.json;
+package com.abneco.delivery.user.json.seller;
 
 import lombok.*;
 

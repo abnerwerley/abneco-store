@@ -1,4 +1,4 @@
-package com.abneco.delivery.user.json;
+package com.abneco.delivery.user.json.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseSellerForm {
+public class BaseUserForm {
 
     private String name;
     private String email;
     private Long phoneNumber;
-    private String cnpj;
 }

@@ -1,4 +1,4 @@
-package com.abneco.delivery.utils;
+package com.abneco.delivery.user.utils;
 
 import com.abneco.delivery.exception.RequestException;
 
@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class ValidateEmail {
     public static void validateEmail(String email) {
-        String emailRegex = ".+[@].+[.].+";
+        String emailRegex = ".+@.+[.].+";
         Pattern pattern = Pattern.compile(emailRegex);
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
