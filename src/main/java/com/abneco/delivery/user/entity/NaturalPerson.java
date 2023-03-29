@@ -1,13 +1,13 @@
 package com.abneco.delivery.user.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class NaturalPerson extends User {
 
-    private Long cpf;
+    private String cpf;
 }

@@ -1,6 +1,7 @@
 package com.abneco.delivery.utils;
 
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.user.utils.ValidateEmail;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

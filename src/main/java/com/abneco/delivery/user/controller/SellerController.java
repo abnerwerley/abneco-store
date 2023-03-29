@@ -1,8 +1,8 @@
 package com.abneco.delivery.user.controller;
 
-import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.UpdateSellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerResponse;
+import com.abneco.delivery.user.json.seller.UpdateSellerForm;
 import com.abneco.delivery.user.service.SellerService;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;

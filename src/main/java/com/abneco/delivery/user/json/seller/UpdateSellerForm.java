@@ -1,5 +1,6 @@
-package com.abneco.delivery.user.json;
+package com.abneco.delivery.user.json.seller;
 
+import com.abneco.delivery.user.json.seller.BaseSellerForm;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -5,7 +5,7 @@ import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerForm;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

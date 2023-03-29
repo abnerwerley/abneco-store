@@ -3,13 +3,15 @@ package com.abneco.delivery.user.service;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.SellerForm;
-import com.abneco.delivery.user.json.SellerResponse;
-import com.abneco.delivery.user.json.UpdateSellerForm;
+import com.abneco.delivery.user.entity.User;
+import com.abneco.delivery.user.json.seller.SellerForm;
+import com.abneco.delivery.user.json.seller.SellerResponse;
+import com.abneco.delivery.user.json.seller.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.repository.UserRepository;
+import com.abneco.delivery.user.utils.ValidateSeller;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
-import com.abneco.delivery.utils.ValidateSeller;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,9 @@ public class SellerService {
     @Autowired
     private SellerRepository repository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public static final String SELLER_NOT_FOUND = "Seller not found.";
 
     private static String passwordEncryptor(String password) {
@@ -40,7 +45,7 @@ public class SellerService {
 
     public void registerSeller(SellerForm form) {
         try {
-            Optional<Seller> optionalUserEmail = repository.findByEmail(form.getEmail());
+            Optional<User> optionalUserEmail = userRepository.findUserByEmail(form.getEmail());
             Optional<Seller> optionalUserCnpj = repository.findByCnpj(form.getCnpj());
             if (optionalUserEmail.isPresent()) {
                 throw new RequestException("Email already in use.");
@@ -49,7 +54,7 @@ public class SellerService {
                 throw new RequestException("Cnpj already in use.");
             }
 
-            save(form.toEntity(), form);
+            save(form);
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
@@ -63,9 +68,18 @@ public class SellerService {
     public void updateSeller(UpdateSellerForm form) {
         try {
             Optional<Seller> optionalUser = repository.findById(form.getId());
+            Optional<User> optionalUserEmail = userRepository.findUserByEmail(form.getEmail());
+            Optional<Seller> optionalUserCnpj = repository.findByCnpj(form.getCnpj());
             if (optionalUser.isEmpty()) {
                 throw new ResourceNotFoundException(SELLER_NOT_FOUND);
             }
+            if (optionalUserEmail.isPresent()) {
+                throw new RequestException("Email already in use.");
+            }
+            if (optionalUserCnpj.isPresent()) {
+                throw new RequestException("Cnpj already in use.");
+            }
+
             Seller seller = optionalUser.get();
             seller.setName(UpperCaseFormatter.formatToCapitalLetter(form.getName()));
             seller.setEmail(form.getEmail());
@@ -133,8 +147,9 @@ public class SellerService {
         }
     }
 
-    private void save(Seller seller, SellerForm form) {
+    private void save(SellerForm form) {
         ValidateSeller.validateSeller(form);
+        Seller seller = form.toEntity();
         seller.setPassword(passwordEncryptor(form.getPassword()));
         repository.save(seller);
     }
