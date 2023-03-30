@@ -167,7 +167,6 @@ class SellerServiceTest {
     void testUpdateSellerSellerEmailAlreadyInUse() {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         when(repository.findById(ID)).thenReturn(optionalSeller());
-        when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.of(new User()));
         Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
         assertNotNull(exception);
@@ -235,10 +234,9 @@ class SellerServiceTest {
     @Test
     void testDeleteSellerById() {
         doReturn(optionalSeller()).when(repository).findById(ID);
-        doNothing().when(repository).deleteById(ID);
         service.deleteSellerById(ID);
         verify(repository).findById(ID);
-        verify(repository).deleteById(ID);
+        verify(repository).delete(any(Seller.class));
     }
 
     @Test
@@ -248,7 +246,7 @@ class SellerServiceTest {
         assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
         verify(repository).findById(ID);
-        verify(repository, never()).deleteById(ID);
+        verify(repository, never()).delete(optionalSeller().get());
     }
 
     @Test
@@ -258,7 +256,7 @@ class SellerServiceTest {
         assertNotNull(exception);
         assertEquals("Could not delete seller with id: " + ID, exception.getMessage());
         verify(repository).findById(ID);
-        verify(repository, never()).deleteById(ID);
+        verify(repository, never()).delete(optionalSeller().get());
     }
 
     @Test

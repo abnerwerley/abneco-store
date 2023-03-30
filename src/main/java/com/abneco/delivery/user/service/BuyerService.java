@@ -49,13 +49,6 @@ public class BuyerService {
         }
     }
 
-    private void save(BuyerForm form) {
-        ValidateBuyer.validateBuyer(form);
-        Buyer buyer = form.toEntity();
-        buyer.setPassword(passwordEncryptor(form.getPassword()));
-        repository.save(buyer);
-    }
-
     public List<BuyerResponse> findAllBuyers() {
         try {
             List<Buyer> buyers = repository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
@@ -66,5 +59,12 @@ public class BuyerService {
             log.error("Could not get all buyers." + e.getMessage());
             throw new RequestException("Could not get all buyers.");
         }
+    }
+
+    private void save(BuyerForm form) {
+        ValidateBuyer.validateBuyer(form);
+        Buyer buyer = form.toEntity();
+        buyer.setPassword(passwordEncryptor(form.getPassword()));
+        repository.save(buyer);
     }
 }

@@ -3,7 +3,6 @@ package com.abneco.delivery.user.service;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.entity.User;
 import com.abneco.delivery.user.json.seller.SellerForm;
 import com.abneco.delivery.user.json.seller.SellerResponse;
 import com.abneco.delivery.user.json.seller.UpdateSellerForm;
@@ -21,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,14 +43,15 @@ public class SellerService {
 
     public void registerSeller(SellerForm form) {
         try {
-            Optional<User> optionalUserEmail = userRepository.findUserByEmail(form.getEmail());
-            Optional<Seller> optionalUserCnpj = repository.findByCnpj(form.getCnpj());
-            if (optionalUserEmail.isPresent()) {
-                throw new RequestException("Email already in use.");
-            }
-            if (optionalUserCnpj.isPresent()) {
-                throw new RequestException("Cnpj already in use.");
-            }
+            userRepository.findUserByEmail(form.getEmail())
+                    .ifPresent(user -> {
+                        throw new RequestException("Email already in use.");
+                    });
+
+            repository.findByCnpj(form.getCnpj())
+                    .ifPresent(sellerCnpj -> {
+                        throw new RequestException("Cnpj already in use.");
+                    });
 
             save(form);
         } catch (RequestException e) {
@@ -67,20 +66,17 @@ public class SellerService {
 
     public void updateSeller(UpdateSellerForm form) {
         try {
-            Optional<Seller> optionalUser = repository.findById(form.getId());
-            Optional<User> optionalUserEmail = userRepository.findUserByEmail(form.getEmail());
-            Optional<Seller> optionalUserCnpj = repository.findByCnpj(form.getCnpj());
-            if (optionalUser.isEmpty()) {
-                throw new ResourceNotFoundException(SELLER_NOT_FOUND);
-            }
-            if (optionalUserEmail.isPresent()) {
-                throw new RequestException("Email already in use.");
-            }
-            if (optionalUserCnpj.isPresent()) {
-                throw new RequestException("Cnpj already in use.");
-            }
+            Seller seller = repository.findById(form.getId()).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
+            userRepository.findUserByEmail(form.getEmail())
+                    .ifPresent(user -> {
+                        throw new RequestException("Email already in use.");
+                    });
 
-            Seller seller = optionalUser.get();
+            repository.findByCnpj(form.getCnpj())
+                    .ifPresent(sellerCnpj -> {
+                        throw new RequestException("Cnpj already in use.");
+                    });
+
             seller.setName(UpperCaseFormatter.formatToCapitalLetter(form.getName()));
             seller.setEmail(form.getEmail());
             seller.setPhoneNumber(form.getPhoneNumber());
@@ -104,11 +100,8 @@ public class SellerService {
 
     public SellerResponse findSellerById(String id) {
         try {
-            Optional<Seller> optionalSeller = repository.findById(id);
-            if (optionalSeller.isEmpty()) {
-                throw new ResourceNotFoundException(SELLER_NOT_FOUND);
-            }
-            return optionalSeller.get().toResponse();
+            Seller seller = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
+            return seller.toResponse();
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -132,11 +125,8 @@ public class SellerService {
 
     public void deleteSellerById(String id) {
         try {
-            Optional<Seller> optionalSeller = repository.findById(id);
-            if (optionalSeller.isEmpty()) {
-                throw new ResourceNotFoundException(SELLER_NOT_FOUND);
-            }
-            repository.deleteById(id);
+            Seller seller = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
+            repository.delete(seller);
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());

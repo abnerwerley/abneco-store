@@ -217,7 +217,7 @@ class AddressControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.detail").value("Seller not found."));
+                .andExpect(jsonPath("$.detail").value("User not found."));
 
         repository.deleteById(address.getId());
         sellerRepository.deleteById(seller.getId());
