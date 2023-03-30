@@ -4,7 +4,6 @@ import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.fee.controller.FeeController;
 import com.abneco.delivery.fee.dto.CepForm;
-import com.abneco.delivery.fee.dto.FeeResponse;
 import com.abneco.delivery.fee.service.FeeService;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -26,7 +25,7 @@ public class FeeStep {
     private CepForm invalidForm;
     private CepForm formNullCep;
 
-    public static final String CEP = "04851280";
+    public static final String CEP = "09015311";
     public static final String INVALID_CEP = "A1234567";
 
     @Before
@@ -53,10 +52,9 @@ public class FeeStep {
 
     @Then("FeeResponse is returned according to cep")
     public void feeResponse_is_returned_according_to_cep() {
-        FeeResponse response = controller.getDeliveryFeeByCep(form);
+        BigDecimal response = controller.getDeliveryFeeByCep(form);
         assertNotNull(response);
-        assertEquals(new BigDecimal("7.85"), response.getFrete());
-        assertEquals("SP", response.getEstado());
+        assertEquals(new BigDecimal("7.85"), response);
     }
 
     //Scenario: request sent with an invalid cep

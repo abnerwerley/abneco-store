@@ -79,7 +79,6 @@ public class AddressService {
             throw new RequestException(e.getMessage());
 
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Could not register address by cep. " + e.getMessage());
             throw new RequestException("Could not register address by cep.");
         }

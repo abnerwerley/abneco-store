@@ -4,7 +4,6 @@ import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
-import com.abneco.delivery.fee.dto.FeeResponse;
 import com.abneco.delivery.fee.service.FeeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -52,29 +51,29 @@ class FeeServiceTest {
     void testGenerateResponse() {
         doReturn(getAddressTo(SP)).when(addressService).getAddressTemplate(CEP);
         addressService.getAddressTemplate(CEP);
-        FeeResponse sp = service.generateResponse(CEP);
+        BigDecimal sp = service.generateResponse(CEP);
         assertNotNull(sp);
-        assertEquals(SUDESTE_FEE, sp.getFrete());
+        assertEquals(SUDESTE_FEE, sp);
 
         doReturn(getAddressTo(AL)).when(addressService).getAddressTemplate(CEP);
-        FeeResponse al = service.generateResponse(CEP);
+        BigDecimal al = service.generateResponse(CEP);
         assertNotNull(al);
-        assertEquals(NORDESTE_FEE, al.getFrete());
+        assertEquals(NORDESTE_FEE, al);
 
         doReturn(getAddressTo(DF)).when(addressService).getAddressTemplate(CEP);
-        FeeResponse df = service.generateResponse(CEP);
+        BigDecimal df = service.generateResponse(CEP);
         assertNotNull(df);
-        assertEquals(CENTRO_OESTE_FEE, df.getFrete());
+        assertEquals(CENTRO_OESTE_FEE, df);
 
         doReturn(getAddressTo(PR)).when(addressService).getAddressTemplate(CEP);
-        FeeResponse pr = service.generateResponse(CEP);
+        BigDecimal pr = service.generateResponse(CEP);
         assertNotNull(pr);
-        assertEquals(SUL_FEE, pr.getFrete());
+        assertEquals(SUL_FEE, pr);
 
         doReturn(getAddressTo(AC)).when(addressService).getAddressTemplate(CEP);
-        FeeResponse ac = service.generateResponse(CEP);
+        BigDecimal ac = service.generateResponse(CEP);
         assertNotNull(ac);
-        assertEquals(NORTE_FEE, ac.getFrete());
+        assertEquals(NORTE_FEE, ac);
 
         Exception exception = Assertions.assertThrows(RequestException.class, () -> service.generateResponse(null));
         assertNotNull(exception);

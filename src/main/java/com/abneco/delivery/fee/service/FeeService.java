@@ -1,10 +1,9 @@
 package com.abneco.delivery.fee.service;
 
-import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
-import com.abneco.delivery.fee.dto.FeeResponse;
 import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,12 +22,12 @@ public class FeeService {
     @Autowired
     private AddressService addressService;
 
-    public FeeResponse generateResponse(String cep) {
+    public BigDecimal generateResponse(String cep) {
         try {
             if (cep != null) {
                 AddressTO address = addressService.getAddressTemplate(cep);
                 verifyRegion(address.getUf());
-                return new FeeResponse(address, getFeeByZone(address.getUf()));
+                return getFeeByZone(address.getUf());
             }
             throw new RequestException("Cep is mandatory.");
         } catch (RequestException e) {
