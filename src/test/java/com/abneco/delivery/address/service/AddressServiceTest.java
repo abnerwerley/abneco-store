@@ -175,6 +175,15 @@ class AddressServiceTest {
     }
 
     @Test
+    void testGetAllAddressesException() {
+        when(repository.findAll()).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.getAllAddresses());
+        assertNotNull(exception);
+        assertEquals("Could not get all addresses.", exception.getMessage());
+        verify(repository).findAll();
+    }
+
+    @Test
     void testUpdateAddress() {
         RestTemplate restTemplate = new RestTemplate();
         AddressService service = new AddressService(repository, userRepository, restTemplate);
@@ -212,6 +221,33 @@ class AddressServiceTest {
         assertNotNull(exception);
         assertEquals("Address not found.", exception.getMessage());
         verify(repository).findById(ADDRESS_ID);
+        verify(repository, never()).save(any(Address.class));
+    }
+
+    @Test
+    void testUpdateAddressRequestException() {
+        RestTemplate restTemplate = new RestTemplate();
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, null);
+
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
+        when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(ADDRESS));
+        Exception exception = assertThrows(RequestException.class, () -> service.updateAddress(updateAddressForm));
+        assertNotNull(exception);
+        assertEquals("Address number must not be null.", exception.getMessage());
+        verify(userRepository).findById(SELLER_ID);
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository, never()).save(any(Address.class));
+    }
+
+    @Test
+    void testUpdateAddressException() {
+        AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
+
+        when(userRepository.findById(SELLER_ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.updateAddress(updateAddressForm));
+        assertNotNull(exception);
+        assertEquals("Could not update address.", exception.getMessage());
         verify(repository, never()).save(any(Address.class));
     }
 
