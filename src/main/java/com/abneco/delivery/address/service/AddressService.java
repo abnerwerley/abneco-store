@@ -8,8 +8,8 @@ import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
-import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.entity.User;
+import com.abneco.delivery.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,7 +34,7 @@ public class AddressService {
     private AddressRepository repository;
 
     @Autowired
-    private SellerRepository sellerRepository;
+    private UserRepository userRepository;
     @Autowired
     private RestTemplate restTemplate;
 
@@ -59,16 +59,13 @@ public class AddressService {
 
     public void registerAddressByCep(AddressForm form) {
         try {
-            Optional<Seller> seller = sellerRepository.findById(form.getUserId());
-            if (seller.isEmpty()) {
-                throw new RequestException("User does not exist.");
-            }
-            if (seller.get().getAddress() != null) {
+            User user = userRepository.findById(form.getUserId()).orElseThrow(() -> new RequestException("User does not exist."));
+            if (user.getAddress() != null) {
                 throw new RequestException("User must only has one address.");
             }
             AddressTO addressTO = getAddressTemplate(form.getCep());
             Address address = new Address();
-            address.setUser(seller.get());
+            address.setUser(user);
             address.setCep(form.getCep());
             address.setLogradouro(addressTO.getLogradouro());
             address.setComplemento(form.getComplemento());
@@ -103,16 +100,11 @@ public class AddressService {
 
     public void updateAddress(AddressUpdateForm form) {
         try {
-            Optional<Seller> optionalSeller = sellerRepository.findById(form.getUserId());
-            Optional<Address> optionalAddress = repository.findById(form.getAddressId());
-            if (optionalSeller.isEmpty()) {
-                throw new ResourceNotFoundException("Seller not found.");
+            Optional<User> optionalUser = userRepository.findById(form.getUserId());
+            if (optionalUser.isEmpty()) {
+                throw new ResourceNotFoundException("User not found.");
             }
-            if (optionalAddress.isEmpty()) {
-                throw new ResourceNotFoundException("Address not found.");
-            }
-
-            Address address = optionalAddress.get();
+            Address address = repository.findById(form.getAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found."));
 
             AddressTO searchByCep = this.getAddressTemplate(form.getCep());
             address.setCep(form.getCep());
@@ -127,22 +119,31 @@ public class AddressService {
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
+
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
+
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Could not update address. " + e.getMessage());
             throw new RequestException("Could not update address.");
         }
     }
 
     public void deleteAddressById(String addressId) {
-        Optional<Address> optionalAddress = repository.findById(addressId);
-        if (optionalAddress.isEmpty()) {
-            throw new ResourceNotFoundException("Address not found.");
+        try {
+            Address address = repository.findById(addressId).orElseThrow(() -> new ResourceNotFoundException("Address not found."));
+            repository.delete(address);
+
+        } catch (ResourceNotFoundException e) {
+            log.error(e.getMessage());
+            throw new ResourceNotFoundException(e.getMessage());
+
+        } catch (Exception e) {
+            log.error("Could not delete Address. " + e.getMessage());
+            throw new RequestException("Could not delete Address.");
         }
-        repository.deleteById(addressId);
+
     }
 
     private void save(Address address) {

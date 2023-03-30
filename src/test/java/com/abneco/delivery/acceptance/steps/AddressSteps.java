@@ -6,8 +6,8 @@ import com.abneco.delivery.address.mock.AddressMockRepository;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
-import com.abneco.delivery.user.mock.MockSellerRepositoryData;
-import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.mock.MockUserRepository;
+import com.abneco.delivery.user.repository.UserRepository;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -37,8 +37,8 @@ public class AddressSteps {
     public void setup() {
         RestTemplate restTemplate = new RestTemplate();
         AddressRepository repository = new AddressMockRepository();
-        SellerRepository sellerRepository = new MockSellerRepositoryData();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        UserRepository userRepository = new MockUserRepository();
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
         this.controller = new AddressController(service);
     }
 

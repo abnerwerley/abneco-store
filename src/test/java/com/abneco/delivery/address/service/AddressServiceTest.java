@@ -10,7 +10,7 @@ import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.repository.SellerRepository;
+import com.abneco.delivery.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,7 +35,7 @@ class AddressServiceTest {
     private AddressRepository repository;
 
     @Mock
-    private SellerRepository sellerRepository;
+    private UserRepository userRepository;
 
     public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
@@ -101,9 +101,9 @@ class AddressServiceTest {
     @Test
     void testRegisterAddressByCep() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
 
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, NUMERO);
         service.registerAddressByCep(form);
         verify(repository).save(any(Address.class));
@@ -112,8 +112,8 @@ class AddressServiceTest {
     @Test
     void testRegisterAddressByCepRequestException() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
         Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
@@ -124,8 +124,8 @@ class AddressServiceTest {
     @Test
     void testRegisterAddressByCepUserAlreadyHasAddress() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER_WITH_ADDRESS));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER_WITH_ADDRESS));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
         Exception exception = assertThrows(RequestException.class, () -> service.registerAddressByCep(form));
@@ -136,8 +136,8 @@ class AddressServiceTest {
     @Test
     void testRegisterAddressByCepException() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, NUMERO);
 
@@ -149,8 +149,8 @@ class AddressServiceTest {
     @Test
     void testRegisterAddressByCepLengthException() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, null);
 
@@ -177,12 +177,12 @@ class AddressServiceTest {
     @Test
     void testUpdateAddress() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
         when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(ADDRESS));
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
         service.updateAddress(updateAddressForm);
-        verify(sellerRepository).findById(SELLER_ID);
+        verify(userRepository).findById(SELLER_ID);
         verify(repository).findById(ADDRESS_ID);
         verify(repository).save(any(Address.class));
     }
@@ -190,21 +190,21 @@ class AddressServiceTest {
     @Test
     void testUpdateAddressUserNotFound() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.empty());
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.empty());
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateAddress(updateAddressForm));
         assertNotNull(exception);
-        assertEquals("Seller not found.", exception.getMessage());
-        verify(sellerRepository).findById(SELLER_ID);
+        assertEquals("User not found.", exception.getMessage());
+        verify(userRepository).findById(SELLER_ID);
         verify(repository, never()).save(any(Address.class));
     }
 
     @Test
     void testUpdateAddressSellerNotFound() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, sellerRepository, restTemplate);
-        when(sellerRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
+        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
         when(repository.findById(ADDRESS_ID)).thenReturn(Optional.empty());
 
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
@@ -220,7 +220,7 @@ class AddressServiceTest {
         when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(new Address()));
         service.deleteAddressById(ADDRESS_ID);
         verify(repository).findById(ADDRESS_ID);
-        verify(repository).deleteById(ADDRESS_ID);
+        verify(repository).delete(any(Address.class));
     }
 
     @Test
@@ -230,6 +230,16 @@ class AddressServiceTest {
         assertNotNull(exception);
         assertEquals("Address not found.", exception.getMessage());
         verify(repository).findById(ADDRESS_ID);
-        verify(repository, never()).deleteById(ADDRESS_ID);
+        verify(repository, never()).delete(any(Address.class));
+    }
+
+    @Test
+    void testDeleteAddressByIdException() {
+        when(repository.findById(ADDRESS_ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.deleteAddressById(ADDRESS_ID));
+        assertNotNull(exception);
+        assertEquals("Could not delete Address.", exception.getMessage());
+        verify(repository).findById(ADDRESS_ID);
+        verify(repository, never()).delete(any(Address.class));
     }
 }

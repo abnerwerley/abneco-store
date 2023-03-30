@@ -40,8 +40,8 @@ public class ProductService {
 
     public ProductResponse getProductById(String productId) {
         try {
-            Optional<Product> optionalProduct = repository.findById(productId);
-            return optionalProduct.map(Product::toResponse).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+            Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+            return product.toResponse();
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -88,15 +88,13 @@ public class ProductService {
 
     public void registerProduct(ProductForm form) {
         try {
-            Optional<Seller> optionalSeller = sellerRepository.findById(form.getSellerId());
+            Seller seller = sellerRepository.findById(form.getSellerId()).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
             Optional<Address> optionalAddress = addressRepository.findByUserId(form.getSellerId());
-            if (optionalSeller.isEmpty()) {
-                throw new ResourceNotFoundException(SELLER_NOT_FOUND);
-            }
+
             if (optionalAddress.isEmpty()) {
                 throw new ResourceNotFoundException("One cannot register a product if you have no address.");
             }
-            save(form.toEntity(optionalSeller.get()));
+            save(form.toEntity(seller));
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -114,12 +112,8 @@ public class ProductService {
 
     public void updateProduct(UpdateProductForm form) {
         try {
-            Optional<Product> optionalProduct = repository.findById(form.getProductId());
-            if (optionalProduct.isEmpty()) {
-                throw new ResourceNotFoundException(PRODUCT_NOT_FOUND);
-            }
+            Product product = repository.findById(form.getProductId()).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
 
-            Product product = optionalProduct.get();
             product.setName(form.getName());
             product.setDescription(form.getDescription());
             product.setPrice(form.getPrice());
@@ -142,12 +136,9 @@ public class ProductService {
 
     public void deleteProductById(String productId) {
         try {
-            Optional<Product> optionalProduct = repository.findById(productId);
-            if (optionalProduct.isEmpty()) {
-                throw new ResourceNotFoundException(PRODUCT_NOT_FOUND);
-            }
+            Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
 
-            repository.deleteById(productId);
+            repository.delete(product);
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());

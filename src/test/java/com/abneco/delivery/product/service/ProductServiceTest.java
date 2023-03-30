@@ -138,7 +138,6 @@ class ProductServiceTest {
     void testRegisterProductSellerNotFound() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.empty());
-        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerProduct(form));
         assertEquals("Seller not found.", exception.getMessage());
 
@@ -252,7 +251,7 @@ class ProductServiceTest {
         when(repository.findById(ID)).thenReturn(Optional.of(PRODUCT));
         service.deleteProductById(ID);
         verify(repository).findById(ID);
-        verify(repository).deleteById(ID);
+        verify(repository).delete(any(Product.class));
     }
 
     @Test
@@ -260,6 +259,7 @@ class ProductServiceTest {
         when(repository.findById(ID)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteProductById(ID));
         assertEquals("Product not found.", exception.getMessage());
+        verify(repository, never()).delete(any(Product.class));
     }
 
     @Test
@@ -267,5 +267,6 @@ class ProductServiceTest {
         when(repository.findById(ID)).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.deleteProductById(ID));
         assertEquals("Could not delete product by id.", exception.getMessage());
+        verify(repository, never()).delete(any(Product.class));
     }
 }
