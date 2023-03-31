@@ -1,9 +1,12 @@
 package com.abneco.delivery.user.service;
 
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Buyer;
+import com.abneco.delivery.user.entity.NaturalPerson;
 import com.abneco.delivery.user.json.buyer.BuyerForm;
 import com.abneco.delivery.user.json.buyer.BuyerResponse;
+import com.abneco.delivery.user.json.buyer.BuyerUpdateForm;
 import com.abneco.delivery.user.repository.BuyerRepository;
 import com.abneco.delivery.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
+import static com.abneco.delivery.user.service.SellerServiceTest.NEW_EMAIL;
+import static com.abneco.delivery.user.service.SellerServiceTest.NEW_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -32,12 +37,21 @@ public class BuyerServiceTest {
     @Mock
     private UserRepository userRepository;
 
+
+    public static final String ID = "i091287409dkfajkdhfjkagdkfj";
     public static final String NAME = "Name";
     public static final String EMAIL = "string@email.com";
     public static final String PASSWORD = "12345678";
     public static final Long PHONE_NUMBER = 1112345678L;
     public static final String CPF = "12312312312";
     public static final String SHORT_CPF = "1231231231";
+    public static final NaturalPerson NATURAL_PERSON = new NaturalPerson(EMAIL, CPF, NAME, PASSWORD, PHONE_NUMBER, false);
+    public static final Buyer BUYER = new Buyer(NATURAL_PERSON, "", "");
+    private static final Long NEW_PHONE_NUMBER = 11912344321L;
+    private static final String NEW_CPF = "21312312312";
+    public static final BuyerUpdateForm UPDATE_FORM = new BuyerUpdateForm(ID, NEW_NAME, NEW_EMAIL, NEW_PHONE_NUMBER, NEW_CPF);
+    public static final BuyerUpdateForm UPDATE_FORM_SHORT_CPF = new BuyerUpdateForm(ID, NEW_NAME, NEW_EMAIL, NEW_PHONE_NUMBER, "12349876");
+
 
     @Test
     void testRegisterBuyer() {
@@ -74,6 +88,18 @@ public class BuyerServiceTest {
     }
 
     @Test
+    void testRegisterBuyerException() {
+        BuyerForm form = new BuyerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, SHORT_CPF);
+        when(userRepository.findUserByEmail(EMAIL)).thenThrow(RuntimeException.class);
+
+        Exception exception = assertThrows(RequestException.class, () -> service.registerBuyer(form));
+        assertNotNull(exception);
+        assertEquals("Could not register buyer.", exception.getMessage());
+        verify(userRepository).findUserByEmail(EMAIL);
+        verify(repository, never()).save(any(Buyer.class));
+    }
+
+    @Test
     void testGetAllBuyers() {
         when(repository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"))).thenReturn(List.of(new Buyer()));
         List<BuyerResponse> response = service.findAllBuyers();
@@ -89,4 +115,101 @@ public class BuyerServiceTest {
         assertEquals("Could not get all buyers.", exception.getMessage());
     }
 
+    @Test
+    void testFindBuyerById() {
+        when(repository.findById(ID)).thenReturn(Optional.of(BUYER));
+        BuyerResponse response = service.findBuyerById(ID);
+        assertNotNull(response);
+        assertEquals(BUYER.getId(), response.getId());
+        assertEquals(BUYER.getEmail(), response.getEmail());
+        assertEquals(BUYER.getCpf(), response.getCpf());
+        assertEquals(BUYER.getName(), response.getName());
+        assertEquals(BUYER.getPhoneNumber(), response.getPhoneNumber());
+        verify(repository).findById(ID);
+    }
+
+    @Test
+    void testFindBuyerByIdNotFound() {
+        when(repository.findById(ID)).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.findBuyerById(ID));
+        assertNotNull(exception);
+        assertEquals("Buyer not found.", exception.getMessage());
+        verify(repository).findById(ID);
+    }
+
+    @Test
+    void testFindBuyerByIdException() {
+        when(repository.findById(ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.findBuyerById(ID));
+        assertNotNull(exception);
+        assertEquals("Could not find buyer by id.", exception.getMessage());
+        verify(repository).findById(ID);
+    }
+
+    @Test
+    void testUpdateBuyer() {
+        when(repository.findById(ID)).thenReturn(Optional.of(BUYER));
+        service.updateBuyer(UPDATE_FORM);
+        verify(repository).findById(ID);
+        verify(repository).save(any(Buyer.class));
+    }
+
+    @Test
+    void testUpdateBuyerNotFound() {
+        when(repository.findById(ID)).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateBuyer(UPDATE_FORM));
+        assertNotNull(exception);
+        assertEquals("Buyer not found.", exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).save(any(Buyer.class));
+    }
+
+    @Test
+    void testUpdateBuyerRequestException() {
+        when(repository.findById(ID)).thenReturn(Optional.of(BUYER));
+        Exception exception = assertThrows(RequestException.class, () -> service.updateBuyer(UPDATE_FORM_SHORT_CPF));
+        assertNotNull(exception);
+        assertEquals("Cpf must have 11 numbers, and numbers only.", exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).save(any(Buyer.class));
+    }
+
+    @Test
+    void testUpdateBuyerException() {
+        when(repository.findById(ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.updateBuyer(UPDATE_FORM));
+        assertNotNull(exception);
+        assertEquals("Could not update buyer.", exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).save(any(Buyer.class));
+    }
+
+    @Test
+    void testDeleteBuyerById() {
+        when(repository.findById(ID)).thenReturn(Optional.of(BUYER));
+        service.deleteBuyerById(ID);
+        verify(repository).findById(ID);
+        verify(repository).delete(any(Buyer.class));
+
+    }
+
+    @Test
+    void testDeleteBuyerByIdNoFound() {
+        when(repository.findById(ID)).thenReturn(Optional.empty());
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteBuyerById(ID));
+        assertNotNull(exception);
+        assertEquals("Buyer not found.", exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).delete(any(Buyer.class));
+    }
+
+    @Test
+    void testDeleteBuyerByIdException() {
+        when(repository.findById(ID)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.deleteBuyerById(ID));
+        assertNotNull(exception);
+        assertEquals("Could not delete buyer with id: " + ID, exception.getMessage());
+        verify(repository).findById(ID);
+        verify(repository, never()).delete(any(Buyer.class));
+    }
 }
