@@ -12,16 +12,27 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
+@Entity(name = "BUYER")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-//@Inheritance
 public class Buyer extends NaturalPerson {
 
     @OneToMany(mappedBy = "buyer")
     private List<Purchase> purchases = new ArrayList<>();
+
+
+    public Buyer(NaturalPerson user, String createdAt, String updatedAt) {
+        this.setEmail(user.getEmail());
+        this.setCpf(user.getCpf());
+        this.setName(user.getName());
+        this.setPassword(user.getPassword());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setEmailVerified(user.getEmailVerified());
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+    }
 
     public BuyerResponse toResponse() {
         return BuyerResponse.builder()
