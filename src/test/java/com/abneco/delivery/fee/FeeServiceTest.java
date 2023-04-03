@@ -1,8 +1,8 @@
 package com.abneco.delivery.fee;
 
 import com.abneco.delivery.address.json.AddressTO;
-import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
 import com.abneco.delivery.fee.service.FeeService;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +26,7 @@ class FeeServiceTest {
     private FeeService service;
 
     @Mock
-    private AddressService addressService;
+    private ViacepService viacepService;
 
     public static final String CEP = "0123456";
     public static final String LOGRADOURO = "Rua exemplo";
@@ -49,28 +49,28 @@ class FeeServiceTest {
 
     @Test
     void testGenerateResponse() {
-        doReturn(getAddressTo(SP)).when(addressService).getAddressTemplate(CEP);
-        addressService.getAddressTemplate(CEP);
+        doReturn(getAddressTo(SP)).when(viacepService).getAddressTemplate(CEP);
+        viacepService.getAddressTemplate(CEP);
         BigDecimal sp = service.generateResponse(CEP);
         assertNotNull(sp);
         assertEquals(SUDESTE_FEE, sp);
 
-        doReturn(getAddressTo(AL)).when(addressService).getAddressTemplate(CEP);
+        doReturn(getAddressTo(AL)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal al = service.generateResponse(CEP);
         assertNotNull(al);
         assertEquals(NORDESTE_FEE, al);
 
-        doReturn(getAddressTo(DF)).when(addressService).getAddressTemplate(CEP);
+        doReturn(getAddressTo(DF)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal df = service.generateResponse(CEP);
         assertNotNull(df);
         assertEquals(CENTRO_OESTE_FEE, df);
 
-        doReturn(getAddressTo(PR)).when(addressService).getAddressTemplate(CEP);
+        doReturn(getAddressTo(PR)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal pr = service.generateResponse(CEP);
         assertNotNull(pr);
         assertEquals(SUL_FEE, pr);
 
-        doReturn(getAddressTo(AC)).when(addressService).getAddressTemplate(CEP);
+        doReturn(getAddressTo(AC)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal ac = service.generateResponse(CEP);
         assertNotNull(ac);
         assertEquals(NORTE_FEE, ac);

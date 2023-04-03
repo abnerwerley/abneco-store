@@ -3,11 +3,11 @@ package com.abneco.delivery.address.service;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressResponse;
-import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
+import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.user.entity.JuridicalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.repository.UserRepository;
@@ -37,14 +37,14 @@ class AddressServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private ViacepService viacepService;
+
     public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
     private static final String NEW_CEP = "69312349";
     public static final String NOVO_COMPLEMENTO = "lado impar";
     public static final Integer NOVO_NUMERO = 15;
-
-    public static final String CEP_NUMBERS = "04555000";
-    public static final String CEP_9 = "123456789";
     public static final String CEP_LETTER = "04555A00";
     public static final String COMPLEMENTO = "";
     public static final Integer NUMERO = 123;
@@ -57,51 +57,9 @@ class AddressServiceTest {
 
 
     @Test
-    void testGetAddress() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(restTemplate);
-        AddressTO response = service.getAddressTemplate(CEP);
-        assertNotNull(response);
-        assertEquals("SP", response.getUf());
-    }
-
-    @Test
-    void testGetAddressCepOnlyNumbers() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(restTemplate);
-        AddressTO response = service.getAddressTemplate(CEP_NUMBERS);
-        assertNotNull(response);
-        assertEquals("SP", response.getUf());
-    }
-
-    @Test
-    void testGetAddressCepEmptyString() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(restTemplate);
-        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(""));
-        assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
-    }
-
-    @Test
-    void testGetAddressCepNineNumbers() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(restTemplate);
-        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_9));
-        assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
-    }
-
-    @Test
-    void testGetAddressCepWithLetterAmid() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(restTemplate);
-        Exception exception = assertThrows(RequestException.class, () -> service.getAddressTemplate(CEP_LETTER));
-        assertEquals("Please verify if cep has 8 numbers, and numbers only.", exception.getMessage());
-    }
-
-    @Test
     void testRegisterAddressByCep() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
 
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, NUMERO);
@@ -111,8 +69,8 @@ class AddressServiceTest {
 
     @Test
     void testRegisterAddressByCepRequestException() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
@@ -123,8 +81,7 @@ class AddressServiceTest {
 
     @Test
     void testRegisterAddressByCepUserAlreadyHasAddress() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER_WITH_ADDRESS));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP_LETTER, COMPLEMENTO, NUMERO);
@@ -135,8 +92,8 @@ class AddressServiceTest {
 
     @Test
     void testRegisterAddressByCepException() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, NUMERO);
@@ -148,8 +105,8 @@ class AddressServiceTest {
 
     @Test
     void testRegisterAddressByCepLengthException() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(new Seller()));
 
         AddressForm form = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, null);
@@ -185,8 +142,8 @@ class AddressServiceTest {
 
     @Test
     void testUpdateAddress() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
         when(repository.findById(ADDRESS_ID)).thenReturn(Optional.of(ADDRESS));
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
@@ -198,8 +155,8 @@ class AddressServiceTest {
 
     @Test
     void testUpdateAddressUserNotFound() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.empty());
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, NOVO_NUMERO);
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateAddress(updateAddressForm));
@@ -211,8 +168,7 @@ class AddressServiceTest {
 
     @Test
     void testUpdateAddressSellerNotFound() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));
         when(repository.findById(ADDRESS_ID)).thenReturn(Optional.empty());
 
@@ -226,8 +182,8 @@ class AddressServiceTest {
 
     @Test
     void testUpdateAddressRequestException() {
-        RestTemplate restTemplate = new RestTemplate();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        this.viacepService = new ViacepService(new RestTemplate());
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         AddressUpdateForm updateAddressForm = new AddressUpdateForm(ADDRESS_ID, SELLER_ID, NEW_CEP, NOVO_COMPLEMENTO, null);
 
         when(userRepository.findById(SELLER_ID)).thenReturn(Optional.of(SELLER));

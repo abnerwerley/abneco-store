@@ -8,6 +8,7 @@ import com.abneco.delivery.address.json.AddressUpdateForm;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
+import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.user.entity.User;
 import com.abneco.delivery.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,27 +34,12 @@ public class AddressService {
 
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private RestTemplate restTemplate;
 
-    public AddressService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    @Autowired
+    private ViacepService viacepService;
 
     public static final String ADDRESS_NUMBER_NOT_NULL_MESSAGE = "Address number must not be null.";
 
-    public AddressTO getAddressTemplate(String cep) {
-        try {
-            String url = "https://viacep.com.br/ws/" + cep + "/json/";
-            ResponseEntity<AddressTO> response = restTemplate.getForEntity(url, AddressTO.class);
-            return response.getBody();
-
-        } catch (Exception e) {
-
-            log.error("Please verify if cep has 8 numbers, and numbers only.");
-            throw new RequestException("Please verify if cep has 8 numbers, and numbers only.");
-        }
-    }
 
     public void registerAddressByCep(AddressForm form) {
         try {
@@ -63,7 +47,7 @@ public class AddressService {
             if (user.getAddress() != null) {
                 throw new RequestException("User must only has one address.");
             }
-            AddressTO addressTO = getAddressTemplate(form.getCep());
+            AddressTO addressTO = viacepService.getAddressTemplate(form.getCep());
             Address address = new Address();
             address.setUser(user);
             address.setCep(form.getCep());
@@ -105,7 +89,7 @@ public class AddressService {
             }
             Address address = repository.findById(form.getAddressId()).orElseThrow(() -> new ResourceNotFoundException("Address not found."));
 
-            AddressTO searchByCep = this.getAddressTemplate(form.getCep());
+            AddressTO searchByCep = viacepService.getAddressTemplate(form.getCep());
             address.setCep(form.getCep());
             address.setLogradouro(searchByCep.getLogradouro());
             address.setBairro(searchByCep.getBairro());
