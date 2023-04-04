@@ -3,6 +3,7 @@ package com.abneco.delivery.fee.service;
 import com.abneco.delivery.address.json.AddressTO;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,13 @@ public class FeeService {
     @Autowired
     private AddressService addressService;
 
+    @Autowired
+    private ViacepService viacepService;
+
     public BigDecimal generateResponse(String cep) {
         try {
             if (cep != null) {
-                AddressTO address = addressService.getAddressTemplate(cep);
+                AddressTO address = viacepService.getAddressTemplate(cep);
                 verifyRegion(address.getUf());
                 return getFeeByZone(address.getUf());
             }

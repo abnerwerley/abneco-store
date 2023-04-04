@@ -6,6 +6,7 @@ import com.abneco.delivery.address.mock.AddressMockRepository;
 import com.abneco.delivery.address.repository.AddressRepository;
 import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
+import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.user.mock.MockUserRepository;
 import com.abneco.delivery.user.repository.UserRepository;
 import io.cucumber.datatable.DataTable;
@@ -38,7 +39,8 @@ public class AddressSteps {
         RestTemplate restTemplate = new RestTemplate();
         AddressRepository repository = new AddressMockRepository();
         UserRepository userRepository = new MockUserRepository();
-        AddressService service = new AddressService(repository, userRepository, restTemplate);
+        ViacepService viacepService = new ViacepService(restTemplate);
+        AddressService service = new AddressService(repository, userRepository, viacepService);
         this.controller = new AddressController(service);
     }
 
