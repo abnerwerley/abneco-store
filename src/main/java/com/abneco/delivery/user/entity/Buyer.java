@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,22 @@ public class Buyer extends NaturalPerson {
         this.setEmailVerified(user.getEmailVerified());
         this.setCreatedAt(createdAt);
         this.setUpdatedAt(updatedAt);
+    }
+
+    public Buyer(String id, NaturalPerson user, String createdAt, String updatedAt) {
+        this.setId(id);
+        this.setEmail(user.getEmail());
+        this.setCpf(user.getCpf());
+        this.setName(user.getName());
+        this.setPassword(user.getPassword());
+        this.setPhoneNumber(user.getPhoneNumber());
+        this.setEmailVerified(user.getEmailVerified());
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
+    }
+
+    public void setPurchases(Purchase purchase) {
+        this.purchases.add(purchase);
     }
 
     public BuyerResponse toResponse() {
