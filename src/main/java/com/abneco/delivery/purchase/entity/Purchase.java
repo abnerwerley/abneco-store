@@ -11,6 +11,8 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -28,9 +30,13 @@ public class Purchase {
     @ManyToOne
     private Buyer buyer;
 
-    @ManyToOne
+    @ManyToMany
     @NotNull
-    private Product product;
+    @JoinTable(
+            name = "purchase_product",
+            joinColumns = @JoinColumn(name = "purchase_id"),
+            inverseJoinColumns = @JoinColumn(name = "product_id"))
+    private List<Product> products = new ArrayList<>();
 
     @NotNull
     private int quantity;

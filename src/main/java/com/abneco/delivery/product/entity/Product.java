@@ -39,10 +39,22 @@ public class Product {
     @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
     private Seller seller;
 
-    @OneToMany(mappedBy = "product")
+    @ManyToMany(mappedBy = "products")
     private List<Purchase> purchases = new ArrayList<>();
 
+    public void setPurchases(Purchase purchase) {
+        purchases.add(purchase);
+    }
+
     public Product(String name, String description, BigDecimal price, Seller seller) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.seller = seller;
+    }
+
+    public Product(String productId, String name, String description, BigDecimal price, Seller seller) {
+        this.id = productId;
         this.name = name;
         this.description = description;
         this.price = price;
