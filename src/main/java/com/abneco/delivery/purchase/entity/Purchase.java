@@ -1,6 +1,7 @@
 package com.abneco.delivery.purchase.entity;
 
 import com.abneco.delivery.product.entity.Product;
+import com.abneco.delivery.purchase.json.PurchaseResponse;
 import com.abneco.delivery.user.entity.Buyer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,4 +47,20 @@ public class Purchase {
 
     @Column(name = "purchasedAt")
     private String purchasedAt;
+
+    public PurchaseResponse toResponse() {
+        PurchaseResponse response = new PurchaseResponse();
+
+        List<Product> productList = this.getProducts();
+        List<String> productsIds = new ArrayList<>();
+        productList.forEach(product -> productsIds.add(product.getId()));
+
+        response.setPurchaseId(this.id);
+        response.setBuyerId(this.buyer.getId());
+        response.setProductsIds(productsIds);
+        response.setQuantity(this.quantity);
+        response.setFinalPrice(this.finalPrice);
+
+        return response;
+    }
 }
