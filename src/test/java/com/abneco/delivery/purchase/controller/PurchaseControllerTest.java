@@ -10,8 +10,8 @@ import com.abneco.delivery.product.json.ProductForm;
 import com.abneco.delivery.product.repository.ProductRepository;
 import com.abneco.delivery.product.service.ProductService;
 import com.abneco.delivery.purchase.entity.Purchase;
-import com.abneco.delivery.purchase.json.ProductQuantity;
 import com.abneco.delivery.purchase.json.PurchaseForm;
+import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.purchase.repository.PurchaseRepository;
 import com.abneco.delivery.purchase.service.PurchaseService;
 import com.abneco.delivery.user.entity.Buyer;
@@ -302,7 +302,7 @@ public class PurchaseControllerTest {
         return new Product(productId, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, seller);
     }
 
-    public ProductQuantity productQuantity(String productId, Seller seller) {
-        return new ProductQuantity(product(productId, seller).getId(), QUANTITY5);
+    public PurchasePerProduct productQuantity(String productId, Seller seller) {
+        return new PurchasePerProduct(product(productId, seller).getId(), QUANTITY5);
     }
 }

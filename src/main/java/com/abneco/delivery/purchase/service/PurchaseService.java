@@ -5,8 +5,8 @@ import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.product.repository.ProductRepository;
 import com.abneco.delivery.purchase.entity.Purchase;
-import com.abneco.delivery.purchase.json.ProductQuantity;
 import com.abneco.delivery.purchase.json.PurchaseForm;
+import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.purchase.json.PurchaseResponse;
 import com.abneco.delivery.purchase.repository.PurchaseRepository;
 import com.abneco.delivery.user.entity.Buyer;
@@ -131,16 +131,16 @@ public class PurchaseService {
         return productList;
     }
 
-    public BigDecimal calculateFinalPrice(List<ProductQuantity> productQuantityList) {
+    public BigDecimal calculateFinalPrice(List<PurchasePerProduct> productQuantityList) {
         BigDecimal finalPrice = BigDecimal.ZERO;
-        for (ProductQuantity productQuantity : productQuantityList) {
+        for (PurchasePerProduct productQuantity : productQuantityList) {
             BigDecimal pricePerProduct = purchasePerProduct(productQuantity);
             finalPrice = finalPrice.add(pricePerProduct);
         }
         return finalPrice;
     }
 
-    public BigDecimal purchasePerProduct(ProductQuantity purchasePerProduct) {
+    public BigDecimal purchasePerProduct(PurchasePerProduct purchasePerProduct) {
         Product product = productRepository.findById(purchasePerProduct.getProductId()).orElseThrow(() ->
                 new ResourceNotFoundException("Product not found."));
         return product.getPrice().multiply(new BigDecimal(purchasePerProduct.getQuantity()));

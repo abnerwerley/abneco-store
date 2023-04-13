@@ -17,7 +17,7 @@ import java.util.List;
 public class PurchaseForm {
 
     private String buyerId;
-    private List<ProductQuantity> productAndQuantity;
+    private List<PurchasePerProduct> productAndQuantity;
 
     public Purchase toEntity(Buyer buyer, List<Product> products, BigDecimal finalPrice) {
         Purchase purchase = new Purchase();
