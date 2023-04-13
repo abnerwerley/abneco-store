@@ -42,7 +42,7 @@ public class Product {
     @ManyToMany(mappedBy = "products")
     private List<Purchase> purchases = new ArrayList<>();
 
-    public void setPurchases(Purchase purchase) {
+    public void addPurchase(Purchase purchase) {
         purchases.add(purchase);
     }
 

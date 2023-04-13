@@ -17,14 +17,12 @@ import java.util.List;
 public class PurchaseForm {
 
     private String buyerId;
-    private List<String> products;
-    private int quantity;
+    private List<ProductQuantity> productAndQuantity;
 
     public Purchase toEntity(Buyer buyer, List<Product> products, BigDecimal finalPrice) {
         Purchase purchase = new Purchase();
         purchase.setBuyer(buyer);
         purchase.setProducts(products);
-        purchase.setQuantity(this.quantity);
         purchase.setFinalPrice(finalPrice);
         purchase.setPurchasedAt(DateFormatter.formatNow());
 
