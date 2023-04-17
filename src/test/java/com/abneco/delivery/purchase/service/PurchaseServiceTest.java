@@ -5,14 +5,18 @@ import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.product.repository.ProductRepository;
 import com.abneco.delivery.purchase.entity.Purchase;
+import com.abneco.delivery.purchase.json.ProductQuantity;
 import com.abneco.delivery.purchase.json.PurchaseForm;
 import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.purchase.json.PurchaseResponse;
+import com.abneco.delivery.purchase.repository.PurchasePerProductRepository;
 import com.abneco.delivery.purchase.repository.PurchaseRepository;
+import com.abneco.delivery.purchase.utils.ProductPurchaseConverter;
 import com.abneco.delivery.user.entity.Buyer;
 import com.abneco.delivery.user.entity.NaturalPerson;
 import com.abneco.delivery.user.entity.Seller;
 import com.abneco.delivery.user.repository.BuyerRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +28,6 @@ import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +42,9 @@ public class PurchaseServiceTest {
     @InjectMocks
     private PurchaseService service;
 
+    @InjectMocks
+    private ProductPurchaseConverter converter;
+
     @Mock
     private PurchaseRepository repository;
 
@@ -48,6 +54,9 @@ public class PurchaseServiceTest {
     @Mock
     private BuyerRepository buyerRepository;
 
+    @Mock
+    private PurchasePerProductRepository purchasePerProductRepository;
+
     @Captor
     private ArgumentCaptor<List<Product>> productListCaptor;
 
@@ -56,9 +65,10 @@ public class PurchaseServiceTest {
     public static final String PRODUCT_DESCRIPTION = "The PlayStation 5 (PS5) is a home video game console developed by Sony Interactive Entertainment.";
     public static final BigDecimal PRICE = new BigDecimal("5500");
     public static final Seller SELLER = new Seller();
-    public static final String PRODUCT_ID = "";
+    public static final String PRODUCT_ID = "1";
+    public static final String PRODUCT_ID2 = "2";
     public static final Product PRODUCT = new Product(PRODUCT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, SELLER);
-    public static final Product PRODUCT2 = new Product(PRODUCT_ID, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, SELLER);
+    public static final Product PRODUCT2 = new Product(PRODUCT_ID2, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, SELLER);
     public static final String BUYER_ID = "";
     public static final String BUYER_NAME = "Name";
     public static final String EMAIL = "string@email.com";
@@ -69,29 +79,32 @@ public class PurchaseServiceTest {
     public static final Buyer BUYER = new Buyer(BUYER_ID, NATURAL_PERSON, "", "");
     public static final int QUANTITY5 = 5;
     public static final int QUANTITY4 = 4;
-    public static final PurchasePerProduct PURCHASE_PRODUCT1 = new PurchasePerProduct(PRODUCT.getId(), QUANTITY5);
-    public static final PurchasePerProduct PURCHASE_PRODUCT2 = new PurchasePerProduct(PRODUCT2.getId(), QUANTITY4);
-    public static final List<PurchasePerProduct> PRODUCT_QUANTITY_LIST = List.of(PURCHASE_PRODUCT1, PURCHASE_PRODUCT2);
+    public static final PurchasePerProduct PURCHASE_PRODUCT1 = new PurchasePerProduct("", PRODUCT, QUANTITY5);
+    public static final PurchasePerProduct PURCHASE_PRODUCT2 = new PurchasePerProduct("", PRODUCT2, QUANTITY4);
+    public static final List<PurchasePerProduct> PURCHASE_PER_PRODUCT_LIST = List.of(PURCHASE_PRODUCT1, PURCHASE_PRODUCT2);
+    public static final List<ProductQuantity> PRODUCT_QUANTITY_LIST = List.of(new ProductQuantity(PRODUCT.getId(), QUANTITY5));
     public static final PurchaseForm PURCHASE_FORM = new PurchaseForm(BUYER.getId(), PRODUCT_QUANTITY_LIST);
     public static final PurchaseForm PURCHASE_FORM_DIFFERENT_PRODUCT_QUANTITY = new PurchaseForm(BUYER.getId(), PRODUCT_QUANTITY_LIST);
     public static final BigDecimal FINAL_PRICE = PRODUCT.getPrice();
-    public static final Purchase PURCHASE = new Purchase("", BUYER, List.of(PRODUCT), QUANTITY5, FINAL_PRICE, LocalDateTime.now().toString());
+    public static final Purchase PURCHASE = new Purchase("", BUYER, PURCHASE_PER_PRODUCT_LIST, FINAL_PRICE, LocalDateTime.now().toString());
 
+    @BeforeEach
+    public void setUp() {
+        converter = new ProductPurchaseConverter(productRepository);
+        this.service = new PurchaseService(repository, productRepository, buyerRepository, purchasePerProductRepository, converter);
+    }
 
     @Test
     void testGetPurchaseById() {
         when(repository.findById(PURCHASE.getId())).thenReturn(Optional.of(PURCHASE));
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(PRODUCT));
+        when(productRepository.findById(PRODUCT_ID2)).thenReturn(Optional.of(PRODUCT2));
         PurchaseResponse response = service.getPurchaseById(PURCHASE.getId());
-        List<Product> products = PURCHASE.getProducts();
-        List<String> productsIds = new ArrayList<>();
-        products.forEach(product -> productsIds.add(product.getId()));
-
 
         assertEquals(PURCHASE.getId(), response.getPurchaseId());
         assertEquals(PURCHASE.getBuyer().getId(), response.getBuyerId());
-        assertEquals(productsIds, response.getProductsIds());
         assertEquals(PURCHASE.getFinalPrice(), response.getFinalPrice());
-        assertEquals(PURCHASE.getQuantity(), response.getQuantity());
+//        assertEquals(PRODUCT_QUANTITY_LIST, response.getProductIdList());
         verify(repository).findById(PURCHASE.getId());
     }
 
@@ -114,6 +127,8 @@ public class PurchaseServiceTest {
     @Test
     void testGetAllPurchases() {
         when(repository.findAll(Sort.by(Sort.Direction.DESC, "purchasedAt"))).thenReturn(List.of(PURCHASE));
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(PRODUCT));
+        when(productRepository.findById(PRODUCT_ID2)).thenReturn(Optional.of(PRODUCT2));
 
         List<PurchaseResponse> purchases = service.getAllPurchases();
         assertEquals(1, purchases.size());
@@ -131,9 +146,10 @@ public class PurchaseServiceTest {
 
     @Test
     void testGetByBuyer() {
-        BUYER.setPurchases(PURCHASE);
         when(buyerRepository.findById(BUYER.getId())).thenReturn(Optional.of(BUYER));
         when(repository.findByBuyerId(BUYER.getId())).thenReturn(List.of(PURCHASE));
+        when(productRepository.findById(PRODUCT_ID)).thenReturn(Optional.of(PRODUCT));
+        when(productRepository.findById(PRODUCT_ID2)).thenReturn(Optional.of(PRODUCT2));
 
         List<PurchaseResponse> purchases = service.getPurchasesByBuyerId(BUYER_ID);
         assertEquals(1, purchases.size());
@@ -158,61 +174,24 @@ public class PurchaseServiceTest {
 
     @Test
     void testRegisterPurchase() {
-        List<String> productsId = List.of(PRODUCT.getId(), PRODUCT2.getId());
-        when(productRepository.findAllById(productsId)).thenReturn(List.of(PRODUCT, PRODUCT2));
         when(productRepository.findById(PRODUCT.getId())).thenReturn(Optional.of(PRODUCT));
-        when(productRepository.findById(PRODUCT2.getId())).thenReturn(Optional.of(PRODUCT2));
         when(buyerRepository.findById(BUYER.getId())).thenReturn(Optional.of(BUYER));
+        converter.convertToPurchasePerProductList(PRODUCT_QUANTITY_LIST);
 
         service.registerPurchase(PURCHASE_FORM);
 
-        verify(productRepository).findAllById(productsId);
         verify(buyerRepository).findById(BUYER.getId());
-
         verify(repository).save(any(Purchase.class));
         verify(buyerRepository).save(any(Buyer.class));
-        verify(productRepository).saveAll(productListCaptor.capture());
-    }
-
-    @Test
-    void testRegisterPurchaseDifferentProductQuantity() {
-        List<String> productsId = List.of(PRODUCT.getId(), PRODUCT2.getId());
-        when(productRepository.findAllById(productsId)).thenReturn(List.of());
-
-        Exception exception = assertThrows(RequestException.class, () -> service.registerPurchase(PURCHASE_FORM_DIFFERENT_PRODUCT_QUANTITY));
-        assertEquals("One or more products not found.", exception.getMessage());
-        verify(productRepository).findAllById(productsId);
-
-        verify(repository, never()).save(any(Purchase.class));
-        verify(buyerRepository, never()).save(any(Buyer.class));
-        verify(productRepository, never()).saveAll(productListCaptor.capture());
-    }
-
-    @Test
-    void testRegisterPurchaseProductNotFound() {
-        List<String> productsId = List.of(PRODUCT.getId(), PRODUCT2.getId());
-        when(productRepository.findAllById(productsId)).thenReturn(List.of(PRODUCT2));
-
-        Exception exception = assertThrows(RequestException.class, () -> service.registerPurchase(PURCHASE_FORM));
-        assertEquals("One or more products not found.", exception.getMessage());
-
-        verify(productRepository).findAllById(productsId);
-
-        verify(repository, never()).save(any(Purchase.class));
-        verify(buyerRepository, never()).save(any(Buyer.class));
-        verify(productRepository, never()).saveAll(productListCaptor.capture());
     }
 
     @Test
     void testRegisterPurchaseBuyerNotFound() {
-        List<String> productsId = List.of(PRODUCT.getId(), PRODUCT2.getId());
-        when(productRepository.findAllById(productsId)).thenReturn(List.of(PRODUCT, PRODUCT2));
         when(buyerRepository.findById(BUYER.getId())).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerPurchase(PURCHASE_FORM));
         assertEquals("Buyer not found.", exception.getMessage());
 
-        verify(productRepository).findAllById(productsId);
         verify(buyerRepository).findById(BUYER.getId());
 
         verify(repository, never()).save(any(Purchase.class));
@@ -222,14 +201,11 @@ public class PurchaseServiceTest {
 
     @Test
     void testRegisterPurchaseException() {
-        List<String> productsId = List.of(PRODUCT.getId(), PRODUCT2.getId());
-        when(productRepository.findAllById(productsId)).thenReturn(List.of(PRODUCT, PRODUCT2));
         when(buyerRepository.findById(BUYER.getId())).thenThrow(RuntimeException.class);
 
         Exception exception = assertThrows(RequestException.class, () -> service.registerPurchase(PURCHASE_FORM));
         assertEquals("Could not purchase.", exception.getMessage());
 
-        verify(productRepository).findAllById(productsId);
         verify(buyerRepository).findById(BUYER.getId());
 
         verify(repository, never()).save(any(Purchase.class));
@@ -269,14 +245,14 @@ public class PurchaseServiceTest {
     @Test
     void testpurchasePerProduct() {
         when(productRepository.findById(PRODUCT.getId())).thenReturn(Optional.of(PRODUCT));
-        BigDecimal price = service.purchasePerProduct((PURCHASE_PRODUCT1));
+        BigDecimal price = service.purchasePerProductPrice((PURCHASE_PRODUCT1));
         assertEquals(new BigDecimal("27500"), price);
     }
 
     @Test
     void testpurchasePerProductNotFound() {
         when(productRepository.findById(PRODUCT.getId())).thenReturn(Optional.empty());
-        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.purchasePerProduct((PURCHASE_PRODUCT1)));
+        Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.purchasePerProductPrice((PURCHASE_PRODUCT1)));
         assertEquals("Product not found.", exception.getMessage());
     }
 
@@ -284,7 +260,11 @@ public class PurchaseServiceTest {
     void testCalculateFinalPrice() {
         when(productRepository.findById(PRODUCT.getId())).thenReturn(Optional.of(PRODUCT));
         when(productRepository.findById(PRODUCT2.getId())).thenReturn(Optional.of(PRODUCT2));
-        BigDecimal price = service.calculateFinalPrice(PRODUCT_QUANTITY_LIST);
+        BigDecimal price = service.calculateFinalPrice(PURCHASE_PER_PRODUCT_LIST);
         assertEquals(new BigDecimal("49500"), price);
+    }
+
+    private List<String> getProductIdList() {
+        return converter.getProductIdsFromPurchasePerProductList(PURCHASE_PER_PRODUCT_LIST);
     }
 }

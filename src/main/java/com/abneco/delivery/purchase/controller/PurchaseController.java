@@ -3,7 +3,6 @@ package com.abneco.delivery.purchase.controller;
 import com.abneco.delivery.purchase.json.PurchaseForm;
 import com.abneco.delivery.purchase.json.PurchaseResponse;
 import com.abneco.delivery.purchase.service.PurchaseService;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/purchase")
-@AllArgsConstructor
 @NoArgsConstructor
 public class PurchaseController {
 

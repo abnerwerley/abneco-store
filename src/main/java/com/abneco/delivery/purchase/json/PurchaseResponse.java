@@ -16,7 +16,6 @@ public class PurchaseResponse {
 
     private String purchaseId;
     private String buyerId;
-    private List<String> productsIds;
-    private int quantity;
+    private List<ProductQuantity> productQuantityList;
     private BigDecimal finalPrice;
 }

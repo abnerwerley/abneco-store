@@ -10,8 +10,10 @@ import com.abneco.delivery.product.json.ProductForm;
 import com.abneco.delivery.product.repository.ProductRepository;
 import com.abneco.delivery.product.service.ProductService;
 import com.abneco.delivery.purchase.entity.Purchase;
+import com.abneco.delivery.purchase.json.ProductQuantity;
 import com.abneco.delivery.purchase.json.PurchaseForm;
 import com.abneco.delivery.purchase.json.PurchasePerProduct;
+import com.abneco.delivery.purchase.repository.PurchasePerProductRepository;
 import com.abneco.delivery.purchase.repository.PurchaseRepository;
 import com.abneco.delivery.purchase.service.PurchaseService;
 import com.abneco.delivery.user.entity.Buyer;
@@ -81,6 +83,9 @@ public class PurchaseControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PurchasePerProductRepository purchasePerProductRepository;
+
 
     public static final String PRODUCT_NAME = "Playstation 5";
     public static final String PRODUCT_DESCRIPTION = "The PlayStation 5 (PS5) is a home video game console developed by Sony Interactive Entertainment.";
@@ -113,7 +118,7 @@ public class PurchaseControllerTest {
         buyerService.registerBuyer(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
-        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId(), seller)));
+        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(new ProductQuantity(product.getId(), QUANTITY5)));
         service.registerPurchase(form);
 
         Purchase purchase = repository.findByBuyerId(buyer.getId()).get(0);
@@ -122,7 +127,10 @@ public class PurchaseControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+        PurchasePerProduct purchasePerProduct = purchasePerProductRepository.findByProductId(product.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Purchase per product not found."));
         repository.deleteById(purchase.getId());
+        purchasePerProductRepository.deleteById(purchasePerProduct.getId());
         productRepository.deleteById(product.getId());
         addressRepository.deleteById(address.getId());
         userRepository.deleteById(seller.getId());
@@ -151,7 +159,7 @@ public class PurchaseControllerTest {
         buyerService.registerBuyer(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
-        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId(), seller)));
+        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
         service.registerPurchase(form);
 
         Purchase purchase = repository.findByBuyerId(buyer.getId()).get(0);
@@ -162,7 +170,10 @@ public class PurchaseControllerTest {
                 .andExpect(jsonPath("$.purchaseId").value(purchase.getId()))
                 .andExpect(jsonPath("$.buyerId").value(buyer.getId()));
 
+        PurchasePerProduct purchasePerProduct = purchasePerProductRepository.findByProductId(product.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Purchase per product not found."));
         repository.deleteById(purchase.getId());
+        purchasePerProductRepository.deleteById(purchasePerProduct.getId());
         productRepository.deleteById(product.getId());
         addressRepository.deleteById(address.getId());
         userRepository.deleteById(seller.getId());
@@ -192,7 +203,7 @@ public class PurchaseControllerTest {
         buyerService.registerBuyer(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
-        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId(), seller)));
+        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
         service.registerPurchase(form);
 
         Purchase purchase = repository.findByBuyerId(buyer.getId()).get(0);
@@ -201,7 +212,10 @@ public class PurchaseControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
+        PurchasePerProduct purchasePerProduct = purchasePerProductRepository.findByProductId(product.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Purchase per product not found."));
         repository.deleteById(purchase.getId());
+        purchasePerProductRepository.deleteById(purchasePerProduct.getId());
         productRepository.deleteById(product.getId());
         addressRepository.deleteById(address.getId());
         userRepository.deleteById(seller.getId());
@@ -242,14 +256,18 @@ public class PurchaseControllerTest {
         buyerService.registerBuyer(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
-        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId(), seller)));
+        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
         mockMvc.perform(post("/purchase")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isCreated());
 
         Purchase purchase = repository.findByBuyerId(buyer.getId()).get(0);
-        repository.delete(purchase);
+        PurchasePerProduct purchasePerProduct = purchasePerProductRepository.findByProductId(product.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Purchase per product not found."));
+
+        repository.deleteById(purchase.getId());
+        purchasePerProductRepository.deleteById(purchasePerProduct.getId());
         productRepository.deleteById(product.getId());
         addressRepository.deleteById(address.getId());
         userRepository.deleteById(seller.getId());
@@ -271,7 +289,7 @@ public class PurchaseControllerTest {
         buyerService.registerBuyer(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
-        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId(), seller)));
+        PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
         service.registerPurchase(form);
 
         Purchase purchase = repository.findByBuyerId(buyer.getId()).get(0);
@@ -280,6 +298,9 @@ public class PurchaseControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
 
+        PurchasePerProduct purchasePerProduct = purchasePerProductRepository.findByProductId(product.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Purchase per product not found."));
+        purchasePerProductRepository.deleteById(purchasePerProduct.getId());
         productRepository.deleteById(product.getId());
         addressRepository.deleteById(address.getId());
         userRepository.deleteById(seller.getId());
@@ -294,15 +315,12 @@ public class PurchaseControllerTest {
                 .andExpect(jsonPath("$.detail").value("Purchase not found."));
     }
 
-    public ProductForm productForm(String sellerId) {
+    private ProductForm productForm(String sellerId) {
         return new ProductForm(PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, sellerId);
     }
 
-    public Product product(String productId, Seller seller) {
-        return new Product(productId, PRODUCT_NAME, PRODUCT_DESCRIPTION, PRICE, seller);
+    private ProductQuantity productQuantity(String productId) {
+        return new ProductQuantity(productId, QUANTITY5);
     }
 
-    public PurchasePerProduct productQuantity(String productId, Seller seller) {
-        return new PurchasePerProduct(product(productId, seller).getId(), QUANTITY5);
-    }
 }
