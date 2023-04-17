@@ -1,7 +1,10 @@
 package com.abneco.delivery.purchase.entity;
 
-import com.abneco.delivery.product.entity.Product;
+import com.abneco.delivery.product.repository.ProductRepository;
+import com.abneco.delivery.purchase.json.ProductQuantity;
+import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.purchase.json.PurchaseResponse;
+import com.abneco.delivery.purchase.utils.ProductPurchaseConverter;
 import com.abneco.delivery.user.entity.Buyer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,13 +37,10 @@ public class Purchase {
     @ManyToMany
     @NotNull
     @JoinTable(
-            name = "purchase_product",
+            name = "purchase_purchase_per_product",
             joinColumns = @JoinColumn(name = "purchase_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private List<Product> products = new ArrayList<>();
-
-    @NotNull
-    private int quantity;
+            inverseJoinColumns = @JoinColumn(name = "purchase_per_product_id"))
+    private List<PurchasePerProduct> purchasesPerProducts = new ArrayList<>();
 
     @NotNull
     private BigDecimal finalPrice;
@@ -48,19 +48,15 @@ public class Purchase {
     @Column(name = "purchasedAt")
     private String purchasedAt;
 
-    public PurchaseResponse toResponse() {
+    public PurchaseResponse toResponse(ProductRepository productRepository) {
         PurchaseResponse response = new PurchaseResponse();
+        ProductPurchaseConverter converter = new ProductPurchaseConverter(productRepository);
 
-        List<Product> productList = this.getProducts();
-        List<String> productsIds = new ArrayList<>();
-        productList.forEach(product -> productsIds.add(product.getId()));
-
+        List<ProductQuantity> productQuantityList = converter.convertToProductQuantity(purchasesPerProducts);
         response.setPurchaseId(this.id);
         response.setBuyerId(this.buyer.getId());
-        response.setProductsIds(productsIds);
-        response.setQuantity(this.quantity);
+        response.setProductQuantityList(productQuantityList);
         response.setFinalPrice(this.finalPrice);
-
         return response;
     }
 }

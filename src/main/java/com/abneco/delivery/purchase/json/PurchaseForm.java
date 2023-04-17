@@ -1,6 +1,5 @@
 package com.abneco.delivery.purchase.json;
 
-import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.purchase.entity.Purchase;
 import com.abneco.delivery.user.entity.Buyer;
 import com.abneco.delivery.utils.DateFormatter;
@@ -17,12 +16,12 @@ import java.util.List;
 public class PurchaseForm {
 
     private String buyerId;
-    private List<ProductQuantity> productAndQuantity;
+    private List<ProductQuantity> productAndQuantityList;
 
-    public Purchase toEntity(Buyer buyer, List<Product> products, BigDecimal finalPrice) {
+    public Purchase toEntity(Buyer buyer, List<PurchasePerProduct> purchasePerProducts, BigDecimal finalPrice) {
         Purchase purchase = new Purchase();
         purchase.setBuyer(buyer);
-        purchase.setProducts(products);
+        purchase.setPurchasesPerProducts(purchasePerProducts);
         purchase.setFinalPrice(finalPrice);
         purchase.setPurchasedAt(DateFormatter.formatNow());
 

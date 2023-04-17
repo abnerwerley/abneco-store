@@ -1,7 +1,7 @@
 package com.abneco.delivery.product.entity;
 
 import com.abneco.delivery.product.json.ProductResponse;
-import com.abneco.delivery.purchase.entity.Purchase;
+import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.user.entity.Seller;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -39,11 +39,11 @@ public class Product {
     @JoinColumn(name = "seller_id", referencedColumnName = "user_id")
     private Seller seller;
 
-    @ManyToMany(mappedBy = "products")
-    private List<Purchase> purchases = new ArrayList<>();
+    @ManyToMany(mappedBy = "product")
+    private List<PurchasePerProduct> purchasesPerProduct = new ArrayList<>();
 
-    public void addPurchase(Purchase purchase) {
-        purchases.add(purchase);
+    public void addPurchasePerProduct(PurchasePerProduct purchase) {
+        purchasesPerProduct.add(purchase);
     }
 
     public Product(String name, String description, BigDecimal price, Seller seller) {

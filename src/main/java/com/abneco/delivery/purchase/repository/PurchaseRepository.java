@@ -11,5 +11,4 @@ public interface PurchaseRepository extends JpaRepository<Purchase, String> {
 
     List<Purchase> findByBuyerId(String buyerId);
 
-
 }
