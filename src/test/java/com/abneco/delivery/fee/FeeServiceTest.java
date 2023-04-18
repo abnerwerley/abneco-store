@@ -16,8 +16,9 @@ import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FeeServiceTest {
@@ -52,31 +53,25 @@ class FeeServiceTest {
         doReturn(getAddressTo(SP)).when(viacepService).getAddressTemplate(CEP);
         viacepService.getAddressTemplate(CEP);
         BigDecimal sp = service.generateResponse(CEP);
-        assertNotNull(sp);
         assertEquals(SUDESTE_FEE, sp);
 
         doReturn(getAddressTo(AL)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal al = service.generateResponse(CEP);
-        assertNotNull(al);
         assertEquals(NORDESTE_FEE, al);
 
         doReturn(getAddressTo(DF)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal df = service.generateResponse(CEP);
-        assertNotNull(df);
         assertEquals(CENTRO_OESTE_FEE, df);
 
         doReturn(getAddressTo(PR)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal pr = service.generateResponse(CEP);
-        assertNotNull(pr);
         assertEquals(SUL_FEE, pr);
 
         doReturn(getAddressTo(AC)).when(viacepService).getAddressTemplate(CEP);
         BigDecimal ac = service.generateResponse(CEP);
-        assertNotNull(ac);
         assertEquals(NORTE_FEE, ac);
 
         Exception exception = Assertions.assertThrows(RequestException.class, () -> service.generateResponse(null));
-        assertNotNull(exception);
         assertEquals("Cep is mandatory.", exception.getMessage());
 
     }
@@ -84,55 +79,50 @@ class FeeServiceTest {
     @Test
     void testVerifyZone() {
         String sp = service.verifyRegion(SP);
-        assertNotNull(sp);
         assertEquals(EnumBrazilianRegions.SUDESTE.toString(), sp);
 
         String ac = service.verifyRegion(AC);
-        assertNotNull(ac);
         assertEquals(EnumBrazilianRegions.NORTE.toString(), ac);
 
         String al = service.verifyRegion(AL);
-        assertNotNull(al);
         assertEquals(EnumBrazilianRegions.NORDESTE.toString(), al);
 
         String df = service.verifyRegion(DF);
-        assertNotNull(df);
         assertEquals(EnumBrazilianRegions.CENTRO_OESTE.toString(), df);
 
         String pr = service.verifyRegion(PR);
-        assertNotNull(pr);
         assertEquals(EnumBrazilianRegions.SUL.toString(), pr);
 
         Exception notAState = Assertions.assertThrows(NoSuchElementException.class, () -> service.verifyRegion(NOT_A_STATE));
-        assertNotNull(notAState);
         assertEquals("State isn't from Brazil.", notAState.getMessage());
     }
 
     @Test
     void testGetFeeByZone() {
         BigDecimal sp = service.getFeeByZone(SP);
-        assertNotNull(sp);
         assertEquals(SUDESTE_FEE, sp);
 
         BigDecimal ac = service.getFeeByZone(AC);
-        assertNotNull(ac);
         assertEquals(NORTE_FEE, ac);
 
         BigDecimal al = service.getFeeByZone(AL);
-        assertNotNull(al);
         assertEquals(NORDESTE_FEE, al);
 
         BigDecimal df = service.getFeeByZone(DF);
-        assertNotNull(df);
         assertEquals(CENTRO_OESTE_FEE, df);
 
         BigDecimal pr = service.getFeeByZone(PR);
-        assertNotNull(pr);
         assertEquals(SUL_FEE, pr);
 
         Exception notAState = Assertions.assertThrows(NoSuchElementException.class, () -> service.getFeeByZone(NOT_A_STATE));
-        assertNotNull(notAState);
         assertEquals("State isn't from Brazil.", notAState.getMessage());
+    }
+
+    @Test
+    void testGenerateResponseException() {
+        when(viacepService.getAddressTemplate(CEP)).thenThrow(RuntimeException.class);
+        Exception exception = assertThrows(RequestException.class, () -> service.generateResponse(CEP));
+        assertEquals("Could not calculate delivery fee for cep: " + CEP, exception.getMessage());
     }
 
     public AddressTO getAddressTo(String uf) {

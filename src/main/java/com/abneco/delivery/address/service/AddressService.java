@@ -13,7 +13,6 @@ import com.abneco.delivery.user.entity.User;
 import com.abneco.delivery.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j

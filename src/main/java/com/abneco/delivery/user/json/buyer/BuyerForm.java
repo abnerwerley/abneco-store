@@ -14,6 +14,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BuyerForm extends UserForm {
+
     private String cpf;
 
     public BuyerForm(String name, String email, String password, Long phoneNumber, String cpf) {

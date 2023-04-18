@@ -8,7 +8,9 @@ import com.abneco.delivery.user.json.buyer.BuyerResponse;
 import com.abneco.delivery.user.json.buyer.BuyerUpdateForm;
 import com.abneco.delivery.user.repository.BuyerRepository;
 import com.abneco.delivery.user.repository.UserRepository;
-import com.abneco.delivery.user.utils.ValidateBuyer;
+import com.abneco.delivery.user.utils.parameters.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@AllArgsConstructor
+@NoArgsConstructor
 public class BuyerService {
 
     @Autowired
@@ -45,7 +49,7 @@ public class BuyerService {
                     .ifPresent(user -> {
                         throw new RequestException("Cpf already in use.");
                     });
-            save(form);
+            validateAndSave(form);
 
         } catch (RequestException e) {
             log.error(e.getMessage());
@@ -102,7 +106,7 @@ public class BuyerService {
             buyer.setEmail(form.getEmail());
             buyer.setPhoneNumber(form.getPhoneNumber());
             form.setCpf(form.getCpf());
-            save(form);
+            validateAndSave(form);
 
         } catch (ResourceNotFoundException e) {
             log.error("Buyer not found: " + e.getMessage());
@@ -134,15 +138,25 @@ public class BuyerService {
         }
     }
 
+    private void validateAndSave(BuyerForm form) {
+        Validate validator = new ValidateCpf(new ValidatePassword(new ValidateUserName(new NothingToValidate())));
+        validator.validate(form);
+        save(form);
+    }
+
+    private void validateAndSave(BuyerUpdateForm form) {
+        Validate validator = new ValidateCpf(new ValidateUserName(new NothingToValidate()));
+        validator.validate(form);
+        save(form);
+    }
+
     private void save(BuyerForm form) {
-        ValidateBuyer.validateBuyer(form);
         Buyer buyer = form.toEntity();
         buyer.setPassword(passwordEncryptor(form.getPassword()));
         repository.save(buyer);
     }
 
     private void save(BuyerUpdateForm form) {
-        ValidateBuyer.validateBuyer(form);
         Buyer buyer = form.toEntity();
         repository.save(buyer);
     }
