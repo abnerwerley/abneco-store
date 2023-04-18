@@ -1,11 +1,11 @@
 package com.abneco.delivery.user.json.buyer;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
-@Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class BuyerResponse {
     private String id;

@@ -3,7 +3,9 @@ package com.abneco.delivery.address.entity;
 import com.abneco.delivery.address.json.AddressForm;
 import com.abneco.delivery.address.json.AddressResponse;
 import com.abneco.delivery.user.entity.User;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -11,8 +13,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity(name = "ADDRESS")
 @Getter
 @Setter

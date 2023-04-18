@@ -1,13 +1,11 @@
 package com.abneco.delivery.address.json;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
 public class AddressUpdateForm extends BaseAddressForm {
 

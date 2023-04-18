@@ -1,10 +1,8 @@
 package com.abneco.delivery.user.json.seller;
 
 import com.abneco.delivery.user.entity.Seller;
-import com.abneco.delivery.user.json.seller.BaseSellerForm;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class SellerForm extends BaseSellerForm {
 

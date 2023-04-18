@@ -1,10 +1,10 @@
 package com.abneco.delivery.user.entity;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Getter
 @Setter
 public class NaturalPerson extends User {

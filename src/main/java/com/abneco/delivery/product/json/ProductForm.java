@@ -3,11 +3,13 @@ package com.abneco.delivery.product.json;
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.user.entity.Seller;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 public class ProductForm {
 

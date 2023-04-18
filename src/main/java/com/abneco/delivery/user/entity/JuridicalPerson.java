@@ -1,6 +1,5 @@
 package com.abneco.delivery.user.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +8,6 @@ import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class JuridicalPerson extends User {

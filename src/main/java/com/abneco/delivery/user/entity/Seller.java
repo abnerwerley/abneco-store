@@ -3,7 +3,9 @@ package com.abneco.delivery.user.entity;
 import com.abneco.delivery.address.entity.Address;
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.user.json.seller.SellerResponse;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity(name = "SELLER")
 @Getter
 @Setter
