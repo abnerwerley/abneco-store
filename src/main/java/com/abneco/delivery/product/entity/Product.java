@@ -3,7 +3,9 @@ package com.abneco.delivery.product.entity;
 import com.abneco.delivery.product.json.ProductResponse;
 import com.abneco.delivery.purchase.json.PurchasePerProduct;
 import com.abneco.delivery.user.entity.Seller;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -14,8 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Entity(name = "PRODUCT")
 @Getter
 @Setter

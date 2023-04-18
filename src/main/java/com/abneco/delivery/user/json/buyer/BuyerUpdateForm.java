@@ -1,14 +1,10 @@
 package com.abneco.delivery.user.json.buyer;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class BuyerUpdateForm extends BuyerForm {
 
     private String id;

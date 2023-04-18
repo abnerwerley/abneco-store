@@ -1,7 +1,5 @@
 package com.abneco.delivery.user.json.seller;
 
-import com.abneco.delivery.user.json.seller.BaseSellerForm;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +7,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UpdateSellerForm extends BaseSellerForm {
 
     private String id;

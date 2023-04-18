@@ -2,10 +2,8 @@ package com.abneco.delivery.purchase.json;
 
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.purchase.entity.Purchase;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -13,11 +11,9 @@ import javax.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity(name = "PURCHASE_PER_PRODUCT")
-@Setter
 @Table(name = "PURCHASE_PER_PRODUCT")
 public class PurchasePerProduct {
 
@@ -28,7 +24,7 @@ public class PurchasePerProduct {
     private String id;
 
     @ManyToMany(mappedBy = "purchasesPerProducts")
-    private List<Purchase> purchases = new ArrayList<>();
+    private final List<Purchase> purchases = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "product_id")

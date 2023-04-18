@@ -2,7 +2,6 @@ package com.abneco.delivery.user.entity;
 
 import com.abneco.delivery.purchase.entity.Purchase;
 import com.abneco.delivery.user.json.buyer.BuyerResponse;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.util.List;
 @Entity(name = "BUYER")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class Buyer extends NaturalPerson {
 
