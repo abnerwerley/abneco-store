@@ -1,4 +1,4 @@
-package com.abneco.delivery.utils;
+package com.abneco.delivery.user.utils.parameter;
 
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.user.json.user.BaseUserForm;
