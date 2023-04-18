@@ -97,16 +97,15 @@ public class PurchaseService {
 
             BigDecimal finalPrice = calculateFinalPrice(purchasePerProductList);
 
-            Purchase purchase = form.toEntity(buyer, purchasePerProductList, finalPrice);
-            buyer.setPurchases(purchase);
-
             for (PurchasePerProduct purchasePerProduct : purchasePerProductList) {
                 savePurchasePerProduct(purchasePerProduct);
-                Product productPurchase = purchasePerProduct.getProduct();
-                productPurchase.addPurchasePerProduct(purchasePerProduct);
-                saveProduct(productPurchase);
+                Product product = purchasePerProduct.getProduct();
+                product.addPurchasePerProduct(purchasePerProduct);
+                saveProduct(product);
             }
+            Purchase purchase = form.toEntity(buyer, purchasePerProductList, finalPrice);
             savePurchase(purchase);
+            buyer.setPurchases(purchase);
             saveBuyer(buyer);
 
 

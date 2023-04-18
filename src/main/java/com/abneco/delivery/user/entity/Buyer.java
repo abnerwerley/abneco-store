@@ -22,7 +22,6 @@ public class Buyer extends NaturalPerson {
     @OneToMany(mappedBy = "buyer")
     private List<Purchase> purchases = new ArrayList<>();
 
-
     public Buyer(NaturalPerson user, String createdAt, String updatedAt) {
         this.setEmail(user.getEmail());
         this.setCpf(user.getCpf());

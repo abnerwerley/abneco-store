@@ -73,7 +73,7 @@ public class MockUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findById(String s) {
-        return Optional.empty();
+        return Optional.of(new User());
     }
 
     @Override

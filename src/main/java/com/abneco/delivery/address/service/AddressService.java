@@ -43,7 +43,8 @@ public class AddressService {
 
     public void registerAddressByCep(AddressForm form) {
         try {
-            User user = userRepository.findById(form.getUserId()).orElseThrow(() -> new RequestException("User does not exist."));
+            User user = userRepository.findById(form.getUserId()).orElseThrow(() ->
+                    new RequestException("User does not exist."));
             if (user.getAddress() != null) {
                 throw new RequestException("User must only has one address.");
             }
