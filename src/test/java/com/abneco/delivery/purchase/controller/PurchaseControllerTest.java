@@ -48,13 +48,13 @@ public class PurchaseControllerTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
+    private BuyerService buyerService;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private PurchaseService service;
-
-    @Autowired
-    private BuyerService buyerService;
 
     @Autowired
     private ProductService productService;
@@ -85,7 +85,6 @@ public class PurchaseControllerTest {
 
     @Autowired
     private PurchasePerProductRepository purchasePerProductRepository;
-
 
     public static final String PRODUCT_NAME = "Playstation 5";
     public static final String PRODUCT_DESCRIPTION = "The PlayStation 5 (PS5) is a home video game console developed by Sony Interactive Entertainment.";

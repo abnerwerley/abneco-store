@@ -8,7 +8,7 @@ import com.abneco.delivery.user.json.seller.SellerResponse;
 import com.abneco.delivery.user.json.seller.UpdateSellerForm;
 import com.abneco.delivery.user.repository.SellerRepository;
 import com.abneco.delivery.user.repository.UserRepository;
-import com.abneco.delivery.user.utils.ValidateSeller;
+import com.abneco.delivery.user.utils.parameters.*;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
 import lombok.AllArgsConstructor;
@@ -53,7 +53,7 @@ public class SellerService {
                         throw new RequestException("Cnpj already in use.");
                     });
 
-            save(form);
+            validateAndSave(form);
         } catch (RequestException e) {
             log.error(e.getMessage());
             throw new RequestException(e.getMessage());
@@ -82,7 +82,7 @@ public class SellerService {
             seller.setPhoneNumber(form.getPhoneNumber());
             seller.setCnpj(form.getCnpj());
             seller.setUpdatedAt(DateFormatter.formatNow());
-            save(seller, form);
+            validateAndSave(seller, form);
 
         } catch (ResourceNotFoundException e) {
             log.error("Seller not found: " + e.getMessage());
@@ -137,15 +137,21 @@ public class SellerService {
         }
     }
 
-    private void save(SellerForm form) {
-        ValidateSeller.validateSeller(form);
+    private void validateAndSave(SellerForm form) {
+        Validate validator = new ValidateEmail(new ValidateCnpj(new ValidateUserName(new ValidatePassword(new NothingToValidate()))));
+        validator.validate(form);
         Seller seller = form.toEntity();
         seller.setPassword(passwordEncryptor(form.getPassword()));
-        repository.save(seller);
+        save(seller);
     }
 
-    private void save(Seller seller, UpdateSellerForm form) {
-        ValidateSeller.validateSeller(form);
+    private void validateAndSave(Seller seller, UpdateSellerForm form) {
+        Validate validator = new ValidateEmail(new ValidateCnpj(new ValidateUserName(new NothingToValidate())));
+        validator.validate(form);
+        save(seller);
+    }
+
+    private void save(Seller seller) {
         repository.save(seller);
     }
 }

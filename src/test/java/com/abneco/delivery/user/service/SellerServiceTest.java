@@ -20,7 +20,8 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -64,9 +65,8 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerEmailAlreadyInUse() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        doReturn(optionalSeller()).when(userRepository).findUserByEmail(form.getEmail());
+        doReturn(Optional.of(getSeller())).when(userRepository).findUserByEmail(form.getEmail());
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
-        assertNotNull(exception);
         assertEquals("Email already in use.", exception.getMessage());
         verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
@@ -78,7 +78,6 @@ class SellerServiceTest {
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.of(new Seller()));
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
-        assertNotNull(exception);
         assertEquals("Cnpj already in use.", exception.getMessage());
         verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
@@ -88,7 +87,6 @@ class SellerServiceTest {
     void testRegisterSellerWithNotAValidEmail() {
         SellerForm form = new SellerForm(NAME, EMAIL_WITHOUT_AT, PASSWORD, PHONE_NUMBER, CNPJ);
         Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
-        assertNotNull(exception);
         assertEquals("Email has incorrect format.", exception.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -99,30 +97,25 @@ class SellerServiceTest {
         when(userRepository.findUserByEmail(shortCnpjForm.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(shortCnpjForm.getCnpj())).thenReturn(Optional.empty());
         Exception shortCnpj = assertThrows(RequestException.class, () -> service.registerSeller(shortCnpjForm));
-        assertNotNull(shortCnpj);
         assertEquals("Cnpj must have 14 numbers, and numbers only.", shortCnpj.getMessage());
 
         SellerForm longCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, LONG_CNPJ);
         Exception longCnpj = assertThrows(RequestException.class, () -> service.registerSeller(longCnpjForm));
-        assertNotNull(longCnpj);
         assertEquals("Cnpj must have 14 numbers, and numbers only.", longCnpj.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm nullCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, null);
         Exception nullCnpj = assertThrows(RequestException.class, () -> service.registerSeller(nullCnpjForm));
-        assertNotNull(nullCnpj);
         assertEquals("Cnpj must have 14 numbers, and numbers only.", nullCnpj.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm shortNameForm = new SellerForm(SHORT_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         Exception shortName = assertThrows(RequestException.class, () -> service.registerSeller(shortNameForm));
-        assertNotNull(shortName);
         assertEquals("Name must be neither null nor shorter than 3.", shortName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm nullNameForm = new SellerForm(SHORT_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         Exception nullName = assertThrows(RequestException.class, () -> service.registerSeller(nullNameForm));
-        assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -131,7 +124,6 @@ class SellerServiceTest {
     void testRegisterSellerShortPassword() {
         SellerForm shortPasswordForm = new SellerForm(NAME, EMAIL, SHORT_PASSWORD, PHONE_NUMBER, CNPJ);
         Exception shortPassword = assertThrows(RequestException.class, () -> service.registerSeller(shortPasswordForm));
-        assertNotNull(shortPassword);
         assertEquals("Password must be at least 8 char long.", shortPassword.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -147,7 +139,7 @@ class SellerServiceTest {
     @Test
     void testUpdateSeller() {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
-        doReturn(optionalSeller()).when(repository).findById(ID);
+        doReturn(Optional.of(getSeller())).when(repository).findById(ID);
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
         service.updateSeller(form);
         verify(repository).findById(ID);
@@ -159,28 +151,25 @@ class SellerServiceTest {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
         when(repository.findById(ID)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.updateSeller(form));
-        assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
     }
 
     @Test
     void testUpdateSellerSellerEmailAlreadyInUse() {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
-        when(repository.findById(ID)).thenReturn(optionalSeller());
+        when(repository.findById(ID)).thenReturn(Optional.of(getSeller()));
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.of(new User()));
         Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
-        assertNotNull(exception);
         assertEquals("Email already in use.", exception.getMessage());
     }
 
     @Test
     void testUpdateSellerSellerCnpjAlreadyInUse() {
         UpdateSellerForm form = new UpdateSellerForm(ID, NEW_NAME, NEW_EMAIL, PHONE_NUMBER, NEW_CNPJ);
-        when(repository.findById(ID)).thenReturn(optionalSeller());
+        when(repository.findById(ID)).thenReturn(Optional.of(getSeller()));
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.of(new Seller()));
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
-        assertNotNull(exception);
         assertEquals("Cnpj already in use.", exception.getMessage());
     }
 
@@ -190,7 +179,6 @@ class SellerServiceTest {
         when(repository.findById(nullNameForm.getId())).thenReturn(Optional.of(new Seller()));
         when(repository.findByCnpj(nullNameForm.getCnpj())).thenReturn(Optional.empty());
         Exception nullName = assertThrows(RequestException.class, () -> service.updateSeller(nullNameForm));
-        assertNotNull(nullName);
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -200,16 +188,14 @@ class SellerServiceTest {
         UpdateSellerForm form = new UpdateSellerForm(ID, NAME, EMAIL, PHONE_NUMBER, CNPJ);
         when(repository.findById(form.getId())).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.updateSeller(form));
-        assertNotNull(exception);
         assertEquals("Could not update seller.", exception.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
 
     @Test
     void testFindSellerById() {
-        doReturn(optionalSeller()).when(repository).findById(ID);
+        doReturn(Optional.of(getSeller())).when(repository).findById(ID);
         SellerResponse response = service.findSellerById(ID);
-        assertNotNull(response);
         verify(repository).findById(ID);
     }
 
@@ -217,7 +203,6 @@ class SellerServiceTest {
     void testFindSellerByIdNotFound() {
         when(repository.findById(ID)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.findSellerById(ID));
-        assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
         verify(repository).findById(ID);
     }
@@ -226,14 +211,13 @@ class SellerServiceTest {
     void testFindSellerByIdException() {
         when(repository.findById(ID)).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.findSellerById(ID));
-        assertNotNull(exception);
         assertEquals("Could not find seller by id: " + ID, exception.getMessage());
         verify(repository).findById(ID);
     }
 
     @Test
     void testDeleteSellerById() {
-        doReturn(optionalSeller()).when(repository).findById(ID);
+        doReturn(Optional.of(getSeller())).when(repository).findById(ID);
         service.deleteSellerById(ID);
         verify(repository).findById(ID);
         verify(repository).delete(any(Seller.class));
@@ -243,27 +227,24 @@ class SellerServiceTest {
     void testDeleteSellerByIdNotFound() {
         when(repository.findById(ID)).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.deleteSellerById(ID));
-        assertNotNull(exception);
         assertEquals("Seller not found.", exception.getMessage());
         verify(repository).findById(ID);
-        verify(repository, never()).delete(optionalSeller().get());
+        verify(repository, never()).delete(getSeller());
     }
 
     @Test
     void testDeleteSellerByIdException() {
         when(repository.findById(ID)).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.deleteSellerById(ID));
-        assertNotNull(exception);
         assertEquals("Could not delete seller with id: " + ID, exception.getMessage());
         verify(repository).findById(ID);
-        verify(repository, never()).delete(optionalSeller().get());
+        verify(repository, never()).delete(getSeller());
     }
 
     @Test
     void testFindAllSellers() {
         when(repository.findAll((Sort.by(Sort.Direction.DESC, "updatedAt")))).thenReturn(List.of(getSeller()));
         List<SellerResponse> response = service.findAllSellers();
-        assertNotNull(response);
         assertEquals(1, response.size());
     }
 
@@ -271,20 +252,7 @@ class SellerServiceTest {
     void testFindAllSellersException() {
         when(repository.findAll()).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.findAllSellers());
-        assertNotNull(exception);
         assertEquals("Could not get all sellers.", exception.getMessage());
-    }
-
-    public Optional<Seller> optionalSeller() {
-        Seller seller = new Seller();
-        seller.setId(ID);
-        seller.setName(NAME);
-        seller.setEmail(EMAIL);
-        seller.setCnpj(CNPJ);
-        seller.setEmailVerified(false);
-        seller.setPassword(PASSWORD);
-        seller.setCreatedAt("01/03/2023 14:47");
-        return Optional.of(seller);
     }
 
     public Seller getSeller() {
