@@ -6,9 +6,9 @@ Feature: Address
 
   Scenario: register address with valid address data
     Given the following address data:
-      | sellerId                      | cep      | complemento | numero |
-      | asdkfjcakdjflajk-dfcladjfasdf | 68610970 | lado impar  | 14     |
-      | askdfqieoakjdlcn-mnxacmnaskj  | 04855105 |             | 157    |
+      | cep      | complemento | numero |
+      | 68610970 | lado impar  | 14     |
+      | 04855105 |             | 157    |
     When a request to register address with valid data is made
     Then the addres should be successfully registered
 
@@ -19,7 +19,7 @@ Feature: Address
 
   Scenario: register address with invalid address data
     Given the following invalid address data:
-      | sellerId                      | cep       | complemento | numero |
+      | userId                        | cep       | complemento | numero |
       | asdkfjcakdjflajkd-fcladjfasdf | 6861097a  | lado impar  | 14     |
       | lfkajdlpoiuqglsd-kjcakdnxalsd | 048551059 |             | 157    |
     When a request to register address with invalid data is made

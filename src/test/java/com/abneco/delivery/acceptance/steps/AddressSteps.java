@@ -28,11 +28,10 @@ public class AddressSteps {
     private AddressForm invalidForm;
     private AddressForm nullNumberForm;
 
-    public static final String SELLER_ID = "alkdbmncvpasidupqowieursdasd";
+    public static final String USER_ID = "alkdbmncvpasidupqowieursdasd";
     public static final String CEP = "04555-000";
     public static final String COMPLEMENTO = "";
     private String address_id;
-
 
     @Before
     public void setup() {
@@ -51,11 +50,11 @@ public class AddressSteps {
         List<Map<String, String>> addresses = dataTable.asMaps();
 
         for (Map<String, String> address : addresses) {
-            String sellerId = address.get("sellerId");
+
             String cpf = address.get("cep");
             String complemento = address.get("complemento");
             Integer numero = Integer.valueOf(address.get("numero"));
-            this.form = new AddressForm(sellerId, cpf, complemento, numero);
+            this.form = new AddressForm(USER_ID, cpf, complemento, numero);
         }
     }
 
@@ -77,11 +76,10 @@ public class AddressSteps {
         List<Map<String, String>> addresses = dataTable.asMaps();
 
         for (Map<String, String> address : addresses) {
-            String sellerId = address.get("selllerId");
             String cpf = address.get("cep");
             String complemento = address.get("complemento");
             Integer numero = Integer.valueOf(address.get("numero"));
-            this.invalidForm = new AddressForm(sellerId, cpf, complemento, numero);
+            this.invalidForm = new AddressForm(USER_ID, cpf, complemento, numero);
         }
     }
 
@@ -101,7 +99,7 @@ public class AddressSteps {
 
     @Given("the address form with null number")
     public void address_form_with_null_number() {
-        this.nullNumberForm = new AddressForm(SELLER_ID, CEP, COMPLEMENTO, null);
+        this.nullNumberForm = new AddressForm(USER_ID, CEP, COMPLEMENTO, null);
     }
 
     @When("a request to register address with null number is made")
