@@ -84,7 +84,6 @@ public class PurchaseServiceTest {
     public static final List<PurchasePerProduct> PURCHASE_PER_PRODUCT_LIST = List.of(PURCHASE_PRODUCT1, PURCHASE_PRODUCT2);
     public static final List<ProductQuantity> PRODUCT_QUANTITY_LIST = List.of(new ProductQuantity(PRODUCT.getId(), QUANTITY5));
     public static final PurchaseForm PURCHASE_FORM = new PurchaseForm(BUYER.getId(), PRODUCT_QUANTITY_LIST);
-    public static final PurchaseForm PURCHASE_FORM_DIFFERENT_PRODUCT_QUANTITY = new PurchaseForm(BUYER.getId(), PRODUCT_QUANTITY_LIST);
     public static final BigDecimal FINAL_PRICE = PRODUCT.getPrice();
     public static final Purchase PURCHASE = new Purchase("", BUYER, PURCHASE_PER_PRODUCT_LIST, FINAL_PRICE, LocalDateTime.now().toString());
 
@@ -262,9 +261,5 @@ public class PurchaseServiceTest {
         when(productRepository.findById(PRODUCT2.getId())).thenReturn(Optional.of(PRODUCT2));
         BigDecimal price = service.calculateFinalPrice(PURCHASE_PER_PRODUCT_LIST);
         assertEquals(new BigDecimal("49500"), price);
-    }
-
-    private List<String> getProductIdList() {
-        return converter.getProductIdsFromPurchasePerProductList(PURCHASE_PER_PRODUCT_LIST);
     }
 }

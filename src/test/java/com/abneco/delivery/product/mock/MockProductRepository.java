@@ -2,11 +2,13 @@ package com.abneco.delivery.product.mock;
 
 import com.abneco.delivery.product.entity.Product;
 import com.abneco.delivery.product.repository.ProductRepository;
+import com.abneco.delivery.user.entity.Seller;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +75,7 @@ public class MockProductRepository implements ProductRepository {
 
     @Override
     public Optional<Product> findById(String s) {
-        return Optional.empty();
+        return Optional.of(new Product("Playstation 5", "The PlayStation 5 (PS5) is a home video game console developed by Sony Interactive Entertainment.", new BigDecimal("5500"), new Seller()));
     }
 
     @Override
