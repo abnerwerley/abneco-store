@@ -128,9 +128,11 @@ public class PurchaseService {
         try {
             Purchase purchase = getPurchase(purchaseId);
             repository.deleteById(purchase.getId());
+
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
+
         } catch (Exception e) {
             log.error("Could not delete purchase. " + e.getMessage());
             throw new RequestException("Could not delete purchase.");
@@ -144,8 +146,15 @@ public class PurchaseService {
     }
 
     public BigDecimal purchasePerProductPrice(PurchasePerProduct purchasePerProduct) {
+        verifyZeroQuantity(purchasePerProduct);
         Product product = getProduct(purchasePerProduct.getProduct().getId());
         return product.getPrice().multiply(new BigDecimal(purchasePerProduct.getQuantity()));
+    }
+
+    private void verifyZeroQuantity(PurchasePerProduct purchasePerProduct) {
+        if (purchasePerProduct.getQuantity() <= 0) {
+            throw new RequestException("You cannot purchase zero product.");
+        }
     }
 
     private List<Purchase> getAllPurchasesByBuyerId(String buyerId) {
