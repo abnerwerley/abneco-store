@@ -25,7 +25,7 @@ public class SellerController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerSeller(@RequestBody SellerForm form) {
-        service.registerSeller(form);
+        service.register(form);
     }
 
     @PutMapping("")

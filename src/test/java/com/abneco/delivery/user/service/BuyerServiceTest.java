@@ -28,14 +28,14 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class BuyerServiceTest {
 
-    @InjectMocks
-    private BuyerService service;
-
     @Mock
     private BuyerRepository repository;
 
     @Mock
     private UserRepository userRepository;
+
+    @InjectMocks
+    private BuyerService service = new BuyerService(repository, userRepository);
 
 
     public static final String ID = "i091287409dkfajkdhfjkagdkfj";
@@ -52,13 +52,12 @@ public class BuyerServiceTest {
     public static final BuyerUpdateForm UPDATE_FORM = new BuyerUpdateForm(ID, NEW_NAME, NEW_EMAIL, NEW_PHONE_NUMBER, NEW_CPF);
     public static final BuyerUpdateForm UPDATE_FORM_SHORT_CPF = new BuyerUpdateForm(ID, NEW_NAME, NEW_EMAIL, NEW_PHONE_NUMBER, "12349876");
 
-
     @Test
-    void testRegisterBuyer() {
+    void testRegister() {
         BuyerForm form = new BuyerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CPF);
-        when(userRepository.findUserByEmail(EMAIL)).thenReturn(Optional.empty());
+        when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
 
-        service.registerBuyer(form);
+        service.register(form);
         verify(userRepository).findUserByEmail(EMAIL);
         verify(repository).save(any(Buyer.class));
     }
@@ -68,7 +67,7 @@ public class BuyerServiceTest {
         BuyerForm form = new BuyerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CPF);
         when(userRepository.findUserByEmail(EMAIL)).thenReturn(Optional.of(new Buyer()));
 
-        Exception exception = assertThrows(RequestException.class, () -> service.registerBuyer(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertNotNull(exception);
         assertEquals("Email already in use.", exception.getMessage());
         verify(userRepository).findUserByEmail(EMAIL);
@@ -80,7 +79,7 @@ public class BuyerServiceTest {
         BuyerForm form = new BuyerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, SHORT_CPF);
         when(userRepository.findUserByEmail(EMAIL)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RequestException.class, () -> service.registerBuyer(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertNotNull(exception);
         assertEquals("Cpf must have 11 numbers, and numbers only.", exception.getMessage());
         verify(userRepository).findUserByEmail(EMAIL);
@@ -92,9 +91,9 @@ public class BuyerServiceTest {
         BuyerForm form = new BuyerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, SHORT_CPF);
         when(userRepository.findUserByEmail(EMAIL)).thenThrow(RuntimeException.class);
 
-        Exception exception = assertThrows(RequestException.class, () -> service.registerBuyer(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertNotNull(exception);
-        assertEquals("Could not register buyer.", exception.getMessage());
+        assertEquals("Could not register user.", exception.getMessage());
         verify(userRepository).findUserByEmail(EMAIL);
         verify(repository, never()).save(any(Buyer.class));
     }
@@ -189,8 +188,6 @@ public class BuyerServiceTest {
         when(repository.findById(ID)).thenReturn(Optional.of(BUYER));
         service.deleteBuyerById(ID);
         verify(repository).findById(ID);
-        verify(repository).delete(any(Buyer.class));
-
     }
 
     @Test

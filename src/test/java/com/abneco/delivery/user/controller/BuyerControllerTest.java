@@ -57,7 +57,7 @@ public class BuyerControllerTest {
 
     @Test
     void test_get_all_buyers() throws Exception {
-        service.registerBuyer(BUYER_FORM);
+        service.register(BUYER_FORM);
         User user = userRepository.findUserByEmail(BUYER_FORM.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Buyer not found"));
 
@@ -78,7 +78,7 @@ public class BuyerControllerTest {
     @Test
     void test_find_buyer_by_id() throws Exception {
         BUYER_FORM.setCpf(CPF);
-        service.registerBuyer(BUYER_FORM);
+        service.register(BUYER_FORM);
 
         Buyer buyer = repository.findByEmail(BUYER_FORM.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Buyer not found"));
@@ -126,7 +126,7 @@ public class BuyerControllerTest {
 
     @Test
     void test_delete_buyer_by_id() throws Exception {
-        service.registerBuyer(BUYER_FORM);
+        service.register(BUYER_FORM);
 
         Buyer buyer = repository.findByEmail(BUYER_FORM.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Buyer not found"));

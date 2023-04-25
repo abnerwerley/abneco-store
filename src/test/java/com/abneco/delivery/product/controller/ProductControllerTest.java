@@ -77,7 +77,7 @@ class ProductControllerTest {
     @Test
     void test_get_all_products() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -109,7 +109,7 @@ class ProductControllerTest {
     @Test
     void test_get_products_by_seller() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -135,7 +135,7 @@ class ProductControllerTest {
     void test_get_products_by_seller_no_content() throws Exception {
 
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -163,7 +163,7 @@ class ProductControllerTest {
     @Test
     void test_get_product_by_id_success() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -201,7 +201,7 @@ class ProductControllerTest {
     @Test
     void test_register_product() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -227,7 +227,7 @@ class ProductControllerTest {
     @Test
     void test_register_product_zero_price() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -251,7 +251,7 @@ class ProductControllerTest {
     @Test
     void test_update_product_success() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -290,7 +290,7 @@ class ProductControllerTest {
     @Test
     void test_delete_product() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -314,7 +314,7 @@ class ProductControllerTest {
     @Test
     void test_delete_product_not_found() throws Exception {
         SellerForm sellerForm = new SellerForm(SELLER_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        sellerService.registerSeller(sellerForm);
+        sellerService.register(sellerForm);
         Seller seller = sellerRepository.findByEmail(sellerForm.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 

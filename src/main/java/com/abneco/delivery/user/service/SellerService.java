@@ -3,6 +3,8 @@ package com.abneco.delivery.user.service;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.exception.ResourceNotFoundException;
 import com.abneco.delivery.user.entity.Seller;
+import com.abneco.delivery.user.json.buyer.BuyerForm;
+import com.abneco.delivery.user.json.buyer.BuyerUpdateForm;
 import com.abneco.delivery.user.json.seller.SellerForm;
 import com.abneco.delivery.user.json.seller.SellerResponse;
 import com.abneco.delivery.user.json.seller.UpdateSellerForm;
@@ -11,12 +13,8 @@ import com.abneco.delivery.user.repository.UserRepository;
 import com.abneco.delivery.user.utils.parameters.*;
 import com.abneco.delivery.utils.DateFormatter;
 import com.abneco.delivery.utils.UpperCaseFormatter;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,55 +22,24 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@AllArgsConstructor
-@NoArgsConstructor
-public class SellerService {
+public class SellerService extends UserService {
 
-    @Autowired
-    private SellerRepository repository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public SellerService(SellerRepository repository, UserRepository userRepository) {
+        this.sellerRepository = repository;
+        this.userRepository = userRepository;
+    }
 
     public static final String SELLER_NOT_FOUND = "Seller not found.";
 
-    private static String passwordEncryptor(String password) {
-        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-        return encoder.encode(password);
-    }
-
-    public void registerSeller(SellerForm form) {
-        try {
-            userRepository.findUserByEmail(form.getEmail())
-                    .ifPresent(user -> {
-                        throw new RequestException("Email already in use.");
-                    });
-
-            repository.findByCnpj(form.getCnpj())
-                    .ifPresent(sellerCnpj -> {
-                        throw new RequestException("Cnpj already in use.");
-                    });
-
-            validateAndSave(form);
-        } catch (RequestException e) {
-            log.error(e.getMessage());
-            throw new RequestException(e.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new RequestException("Could not register seller.");
-        }
-    }
-
     public void updateSeller(UpdateSellerForm form) {
         try {
-            Seller seller = repository.findById(form.getId()).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
+            Seller seller = getSeller(form.getId());
             userRepository.findUserByEmail(form.getEmail())
                     .ifPresent(user -> {
                         throw new RequestException("Email already in use.");
                     });
 
-            repository.findByCnpj(form.getCnpj())
+            sellerRepository.findByCnpj(form.getCnpj())
                     .ifPresent(sellerCnpj -> {
                         throw new RequestException("Cnpj already in use.");
                     });
@@ -100,7 +67,7 @@ public class SellerService {
 
     public SellerResponse findSellerById(String id) {
         try {
-            Seller seller = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
+            Seller seller = getSeller(id);
             return seller.toResponse();
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -113,7 +80,7 @@ public class SellerService {
 
     public List<SellerResponse> findAllSellers() {
         try {
-            List<Seller> sellers = repository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
+            List<Seller> sellers = sellerRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
             return sellers.stream()
                     .map(Seller::toResponse)
                     .collect(Collectors.toList());
@@ -125,8 +92,8 @@ public class SellerService {
 
     public void deleteSellerById(String id) {
         try {
-            Seller seller = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
-            repository.delete(seller);
+            Seller seller = getSeller(id);
+            sellerRepository.delete(seller);
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -137,12 +104,8 @@ public class SellerService {
         }
     }
 
-    private void validateAndSave(SellerForm form) {
-        Validate validator = new ValidateEmail(new ValidateCnpj(new ValidateUserName(new ValidatePassword(new NothingToValidate()))));
-        validator.validate(form);
-        Seller seller = form.toEntity();
-        seller.setPassword(passwordEncryptor(form.getPassword()));
-        save(seller);
+    private Seller getSeller(String id) {
+        return sellerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
     }
 
     private void validateAndSave(Seller seller, UpdateSellerForm form) {
@@ -152,6 +115,25 @@ public class SellerService {
     }
 
     private void save(Seller seller) {
-        repository.save(seller);
+        sellerRepository.save(seller);
+    }
+
+    @Override
+    protected void validate(SellerForm form) {
+        Validate validator = new ValidateEmail(new ValidateCnpj(new ValidateUserName(new ValidatePassword(new NothingToValidate()))));
+        validator.validate(form);
+        Seller seller = form.toEntity();
+        seller.setPassword(passwordEncryptor(form.getPassword()));
+        save(seller);
+    }
+
+    @Override
+    protected void validate(BuyerForm form) {
+        //
+    }
+
+    @Override
+    protected void validate(BuyerUpdateForm form) {
+        //
     }
 }
