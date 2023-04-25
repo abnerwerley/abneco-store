@@ -26,16 +26,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class BuyerServiceTest {
+class BuyerServiceTest {
+
+    @InjectMocks
+    private BuyerService service;
 
     @Mock
     private BuyerRepository repository;
 
     @Mock
     private UserRepository userRepository;
-
-    @InjectMocks
-    private BuyerService service = new BuyerService(repository, userRepository);
 
 
     public static final String ID = "i091287409dkfajkdhfjkagdkfj";

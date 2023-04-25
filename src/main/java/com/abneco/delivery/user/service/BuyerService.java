@@ -7,13 +7,8 @@ import com.abneco.delivery.user.json.buyer.BuyerForm;
 import com.abneco.delivery.user.json.buyer.BuyerResponse;
 import com.abneco.delivery.user.json.buyer.BuyerUpdateForm;
 import com.abneco.delivery.user.json.seller.SellerForm;
-import com.abneco.delivery.user.repository.BuyerRepository;
-import com.abneco.delivery.user.repository.UserRepository;
 import com.abneco.delivery.user.utils.parameters.*;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -22,23 +17,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@AllArgsConstructor
-@NoArgsConstructor
 public class BuyerService extends UserService {
-
-    @Autowired
-    private BuyerRepository repository;
-
-    public BuyerService(BuyerRepository repository, UserRepository userRepository) {
-        this.repository = repository;
-        this.userRepository = userRepository;
-    }
 
     public static final String BUYER_NOT_FOUND = "Buyer not found.";
 
     public List<BuyerResponse> findAllBuyers() {
         try {
-            List<Buyer> buyers = repository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
+            List<Buyer> buyers = buyerRepository.findAll(Sort.by(Sort.Direction.DESC, "updatedAt"));
             return buyers.stream()
                     .map(Buyer::toResponse)
                     .collect(Collectors.toList());
@@ -70,7 +55,7 @@ public class BuyerService extends UserService {
                     .ifPresent(user -> {
                         throw new RequestException("Email already in use.");
                     });
-            repository.findByCpf(form.getCpf())
+            buyerRepository.findByCpf(form.getCpf())
                     .ifPresent(user -> {
                         throw new RequestException("Cpf already in use.");
                     });
@@ -99,7 +84,7 @@ public class BuyerService extends UserService {
 
     public void deleteBuyerById(String id) {
         try {
-            repository.deleteById(getBuyer(id).getId());
+            buyerRepository.deleteById(getBuyer(id).getId());
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -112,11 +97,11 @@ public class BuyerService extends UserService {
     }
 
     private Buyer getBuyer(String buyerId) {
-        return repository.findById(buyerId).orElseThrow(() -> new ResourceNotFoundException(BUYER_NOT_FOUND));
+        return buyerRepository.findById(buyerId).orElseThrow(() -> new ResourceNotFoundException(BUYER_NOT_FOUND));
     }
 
     private void save(Buyer buyer) {
-        repository.save(buyer);
+        buyerRepository.save(buyer);
     }
 
     @Override
