@@ -83,6 +83,7 @@ public class PurchaseService {
             return purchases.stream()
                     .map(purchase -> purchase.toResponse(productRepository))
                     .collect(Collectors.toList());
+
         } catch (Exception e) {
             log.error("Could not get all purchases. " + e.getMessage());
             throw new RequestException("Could not get all purchases.");
@@ -107,7 +108,6 @@ public class PurchaseService {
             savePurchase(purchase);
             buyer.setPurchases(purchase);
             saveBuyer(buyer);
-
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());

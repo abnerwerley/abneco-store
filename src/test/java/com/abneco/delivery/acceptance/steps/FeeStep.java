@@ -1,6 +1,5 @@
 package com.abneco.delivery.acceptance.steps;
 
-import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.fee.controller.FeeController;
@@ -32,9 +31,8 @@ public class FeeStep {
     @Before
     public void setup() {
         RestTemplate restTemplate = new RestTemplate();
-        AddressService addressService = new AddressService();
         ViacepService viacepService = new ViacepService(restTemplate);
-        FeeService service = new FeeService(addressService, viacepService);
+        FeeService service = new FeeService(viacepService);
         this.controller = new FeeController(service);
         this.form = new CepForm(CEP);
         this.invalidForm = new CepForm(INVALID_CEP);

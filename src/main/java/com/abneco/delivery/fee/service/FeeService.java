@@ -1,7 +1,6 @@
 package com.abneco.delivery.fee.service;
 
 import com.abneco.delivery.address.json.AddressTO;
-import com.abneco.delivery.address.service.AddressService;
 import com.abneco.delivery.exception.RequestException;
 import com.abneco.delivery.external.viacep.service.ViacepService;
 import com.abneco.delivery.fee.dto.EnumBrazilianRegions;
@@ -19,9 +18,6 @@ import java.util.NoSuchElementException;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeeService {
-
-    @Autowired
-    private AddressService addressService;
 
     @Autowired
     private ViacepService viacepService;

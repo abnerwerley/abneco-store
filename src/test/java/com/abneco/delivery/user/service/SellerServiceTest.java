@@ -27,14 +27,14 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class SellerServiceTest {
 
-    @InjectMocks
-    private SellerService service;
-
     @Mock
     private SellerRepository repository;
 
     @Mock
     private UserRepository userRepository;
+
+    @InjectMocks
+    private SellerService service = new SellerService(repository, userRepository);
 
     public static final String ID = "iyu230hskdf-dfoi7-462c-a47f-7afaade01517";
     public static final String NAME = "Name";
@@ -56,7 +56,7 @@ class SellerServiceTest {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.empty());
-        service.registerSeller(form);
+        service.register(form);
         verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository).findByCnpj(form.getCnpj());
         verify(repository).save(any(Seller.class));
@@ -66,7 +66,7 @@ class SellerServiceTest {
     void testRegisterSellerEmailAlreadyInUse() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         doReturn(Optional.of(getSeller())).when(userRepository).findUserByEmail(form.getEmail());
-        Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertEquals("Email already in use.", exception.getMessage());
         verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
@@ -77,7 +77,7 @@ class SellerServiceTest {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         when(userRepository.findUserByEmail(form.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(form.getCnpj())).thenReturn(Optional.of(new Seller()));
-        Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertEquals("Cnpj already in use.", exception.getMessage());
         verify(userRepository).findUserByEmail(form.getEmail());
         verify(repository, never()).save(Mockito.any(Seller.class));
@@ -86,7 +86,7 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerWithNotAValidEmail() {
         SellerForm form = new SellerForm(NAME, EMAIL_WITHOUT_AT, PASSWORD, PHONE_NUMBER, CNPJ);
-        Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
         assertEquals("Email has incorrect format.", exception.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -96,26 +96,26 @@ class SellerServiceTest {
         SellerForm shortCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, SHORT_CNPJ);
         when(userRepository.findUserByEmail(shortCnpjForm.getEmail())).thenReturn(Optional.empty());
         when(repository.findByCnpj(shortCnpjForm.getCnpj())).thenReturn(Optional.empty());
-        Exception shortCnpj = assertThrows(RequestException.class, () -> service.registerSeller(shortCnpjForm));
+        Exception shortCnpj = assertThrows(RequestException.class, () -> service.register(shortCnpjForm));
         assertEquals("Cnpj must have 14 numbers, and numbers only.", shortCnpj.getMessage());
 
         SellerForm longCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, LONG_CNPJ);
-        Exception longCnpj = assertThrows(RequestException.class, () -> service.registerSeller(longCnpjForm));
+        Exception longCnpj = assertThrows(RequestException.class, () -> service.register(longCnpjForm));
         assertEquals("Cnpj must have 14 numbers, and numbers only.", longCnpj.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm nullCnpjForm = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, null);
-        Exception nullCnpj = assertThrows(RequestException.class, () -> service.registerSeller(nullCnpjForm));
+        Exception nullCnpj = assertThrows(RequestException.class, () -> service.register(nullCnpjForm));
         assertEquals("Cnpj must have 14 numbers, and numbers only.", nullCnpj.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm shortNameForm = new SellerForm(SHORT_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        Exception shortName = assertThrows(RequestException.class, () -> service.registerSeller(shortNameForm));
+        Exception shortName = assertThrows(RequestException.class, () -> service.register(shortNameForm));
         assertEquals("Name must be neither null nor shorter than 3.", shortName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
 
         SellerForm nullNameForm = new SellerForm(SHORT_NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        Exception nullName = assertThrows(RequestException.class, () -> service.registerSeller(nullNameForm));
+        Exception nullName = assertThrows(RequestException.class, () -> service.register(nullNameForm));
         assertEquals("Name must be neither null nor shorter than 3.", nullName.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -123,7 +123,7 @@ class SellerServiceTest {
     @Test
     void testRegisterSellerShortPassword() {
         SellerForm shortPasswordForm = new SellerForm(NAME, EMAIL, SHORT_PASSWORD, PHONE_NUMBER, CNPJ);
-        Exception shortPassword = assertThrows(RequestException.class, () -> service.registerSeller(shortPasswordForm));
+        Exception shortPassword = assertThrows(RequestException.class, () -> service.register(shortPasswordForm));
         assertEquals("Password must be at least 8 char long.", shortPassword.getMessage());
         verify(repository, never()).save(Mockito.any(Seller.class));
     }
@@ -132,8 +132,8 @@ class SellerServiceTest {
     void testRegisterSellerException() {
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         when(userRepository.findUserByEmail(EMAIL)).thenThrow(RuntimeException.class);
-        Exception exception = assertThrows(RequestException.class, () -> service.registerSeller(form));
-        assertEquals("Could not register seller.", exception.getMessage());
+        Exception exception = assertThrows(RequestException.class, () -> service.register(form));
+        assertEquals("Could not register user.", exception.getMessage());
     }
 
     @Test

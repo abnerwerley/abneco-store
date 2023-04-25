@@ -21,7 +21,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SellerStep {
+public class SellerSteps {
 
     private SellerController controller;
     private SellerForm form;

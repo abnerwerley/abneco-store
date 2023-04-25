@@ -60,7 +60,7 @@ class SellerControllerTest {
     void test_register_seller_email_already_in_use() throws Exception {
         SellerForm formToBeSaved = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
         SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-        service.registerSeller(formToBeSaved);
+        service.register(formToBeSaved);
 
         mockMvc.perform(post("/seller")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -77,7 +77,7 @@ class SellerControllerTest {
 //    void test_register_seller_cnpj_already_in_use() throws Exception {
 //        SellerForm formToBeSaved = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
 //        SellerForm form = new SellerForm(NAME, EMAIL, PASSWORD, PHONE_NUMBER, CNPJ);
-//        service.registerSeller(formToBeSaved);
+//        service.register(formToBeSaved);
 //
 //        mockMvc.perform(post("/seller")
 //                        .contentType(MediaType.APPLICATION_JSON)
@@ -108,7 +108,7 @@ class SellerControllerTest {
     @Test
     void test_get_all_sellers() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        service.registerSeller(form);
+        service.register(form);
 
         mockMvc.perform(get("/seller")
                         .accept(MediaType.APPLICATION_JSON))
@@ -129,7 +129,7 @@ class SellerControllerTest {
     @Test
     void test_get_seller_by_id_success() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        service.registerSeller(form);
+        service.register(form);
         Seller seller = repository.findByEmail(form.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -156,7 +156,7 @@ class SellerControllerTest {
     @Test
     void test_delete_seller_by_id_success() throws Exception {
         SellerForm form = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        service.registerSeller(form);
+        service.register(form);
         Seller seller = repository.findByEmail(form.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 
@@ -178,7 +178,7 @@ class SellerControllerTest {
     @Test
     void test_update_seller_success() throws Exception {
         SellerForm formToBeSaved = new SellerForm(NAME, EMAIL2, PASSWORD, PHONE_NUMBER, CNPJ);
-        service.registerSeller(formToBeSaved);
+        service.register(formToBeSaved);
         Seller seller = repository.findByEmail(formToBeSaved.getEmail())
                 .orElseThrow(() -> new NoSuchElementException("Seller not found"));
 

@@ -104,7 +104,7 @@ public class PurchaseControllerTest {
 
     @Test
     void test_get_all() throws Exception {
-        sellerService.registerSeller(SELLER_FORM);
+        sellerService.register(SELLER_FORM);
         Seller seller = sellerRepository.findByEmail(SELLER_FORM.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Seller not found."));
 
         AddressForm addressForm = new AddressForm(seller.getId(), "04555000", "", 12);
@@ -114,7 +114,7 @@ public class PurchaseControllerTest {
         productService.registerProduct(productForm(seller.getId()));
         Product product = productRepository.findBySellerId(seller.getId()).get(0);
 
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
         PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(new ProductQuantity(product.getId(), QUANTITY5)));
@@ -145,7 +145,7 @@ public class PurchaseControllerTest {
 
     @Test
     void test_get_by_purchase_id() throws Exception {
-        sellerService.registerSeller(SELLER_FORM);
+        sellerService.register(SELLER_FORM);
         Seller seller = sellerRepository.findByEmail(SELLER_FORM.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Seller not found."));
 
         AddressForm addressForm = new AddressForm(seller.getId(), "04555000", "", 12);
@@ -155,7 +155,7 @@ public class PurchaseControllerTest {
         productService.registerProduct(productForm(seller.getId()));
         Product product = productRepository.findBySellerId(seller.getId()).get(0);
 
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
         PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
@@ -189,7 +189,7 @@ public class PurchaseControllerTest {
 
     @Test
     void test_get_by_buyer_id() throws Exception {
-        sellerService.registerSeller(SELLER_FORM);
+        sellerService.register(SELLER_FORM);
         Seller seller = sellerRepository.findByEmail(SELLER_FORM.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Seller not found."));
 
         AddressForm addressForm = new AddressForm(seller.getId(), "04555000", "", 12);
@@ -199,7 +199,7 @@ public class PurchaseControllerTest {
         productService.registerProduct(productForm(seller.getId()));
         Product product = productRepository.findBySellerId(seller.getId()).get(0);
 
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
         PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
@@ -231,7 +231,7 @@ public class PurchaseControllerTest {
 
     @Test
     void test_get_by_buyer_id_no_content() throws Exception {
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
         mockMvc.perform(get("/purchase/buyer/" + buyer.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -242,7 +242,7 @@ public class PurchaseControllerTest {
     @Test
     void test_register_purchase() throws Exception {
 
-        sellerService.registerSeller(SELLER_FORM);
+        sellerService.register(SELLER_FORM);
         Seller seller = sellerRepository.findByEmail(SELLER_FORM.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Seller not found."));
 
         AddressForm addressForm = new AddressForm(seller.getId(), "04555000", "", 12);
@@ -252,7 +252,7 @@ public class PurchaseControllerTest {
         productService.registerProduct(productForm(seller.getId()));
         Product product = productRepository.findBySellerId(seller.getId()).get(0);
 
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
         PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));
@@ -275,7 +275,7 @@ public class PurchaseControllerTest {
 
     @Test
     void test_delete_by_purchase_id() throws Exception {
-        sellerService.registerSeller(SELLER_FORM);
+        sellerService.register(SELLER_FORM);
         Seller seller = sellerRepository.findByEmail(SELLER_FORM.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Seller not found."));
 
         AddressForm addressForm = new AddressForm(seller.getId(), "04555000", "", 12);
@@ -285,7 +285,7 @@ public class PurchaseControllerTest {
         productService.registerProduct(productForm(seller.getId()));
         Product product = productRepository.findBySellerId(seller.getId()).get(0);
 
-        buyerService.registerBuyer(BUYER_FORM);
+        buyerService.register(BUYER_FORM);
         Buyer buyer = buyerRepository.findByEmail(BUYER.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Buyer not found."));
 
         PurchaseForm form = new PurchaseForm(buyer.getId(), List.of(productQuantity(product.getId())));

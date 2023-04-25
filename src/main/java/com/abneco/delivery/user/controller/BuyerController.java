@@ -36,7 +36,7 @@ public class BuyerController {
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerBuyer(@RequestBody BuyerForm form) {
-        service.registerBuyer(form);
+        service.register(form);
     }
 
     @PutMapping("")
