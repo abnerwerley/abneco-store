@@ -138,6 +138,7 @@ class ProductServiceTest {
     void testRegisterProductSellerNotFound() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
         when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.empty());
+        when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.of(new Address()));
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerProduct(form));
         assertEquals("Seller not found.", exception.getMessage());
 
@@ -148,12 +149,11 @@ class ProductServiceTest {
     @Test
     void testRegisterProductAddressNotFound() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
-        when(sellerRepository.findById(form.getSellerId())).thenReturn(Optional.of(new Seller()));
         when(addressRepository.findByUserId(form.getSellerId())).thenReturn(Optional.empty());
         Exception exception = assertThrows(ResourceNotFoundException.class, () -> service.registerProduct(form));
         assertEquals("One cannot register a product if you have no address.", exception.getMessage());
 
-        verify(sellerRepository).findById(form.getSellerId());
+        verify(addressRepository).findByUserId(form.getSellerId());
         verify(repository, never()).save(any(Product.class));
     }
 
@@ -199,11 +199,11 @@ class ProductServiceTest {
     @Test
     void testRegisterProductException() {
         ProductForm form = new ProductForm(NAME, DESCRIPTION, PRICE, SELLER_ID);
-        when(sellerRepository.findById(form.getSellerId())).thenThrow(RuntimeException.class);
+        when(addressRepository.findByUserId(form.getSellerId())).thenThrow(RuntimeException.class);
         Exception exception = assertThrows(RequestException.class, () -> service.registerProduct(form));
         assertEquals("Could not register product.", exception.getMessage());
 
-        verify(sellerRepository).findById(form.getSellerId());
+        verify(addressRepository).findByUserId(form.getSellerId());
         verify(repository, never()).save(any(Product.class));
     }
 

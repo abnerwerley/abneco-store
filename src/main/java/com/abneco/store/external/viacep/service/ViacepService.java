@@ -5,7 +5,6 @@ import com.abneco.store.exception.RequestException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,8 +19,7 @@ public class ViacepService {
     public AddressTO getAddressTemplate(String cep) {
         try {
             String url = "https://viacep.com.br/ws/" + cep + "/json/";
-            ResponseEntity<AddressTO> response = restTemplate.getForEntity(url, AddressTO.class);
-            return response.getBody();
+            return restTemplate.getForEntity(url, AddressTO.class).getBody();
 
         } catch (Exception e) {
 

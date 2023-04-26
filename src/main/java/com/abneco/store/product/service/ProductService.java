@@ -40,8 +40,7 @@ public class ProductService {
 
     public ProductResponse getProductById(String productId) {
         try {
-            Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
-            return product.toResponse();
+            return getProduct(productId).toResponse();
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -81,20 +80,19 @@ public class ProductService {
             throw new ResourceNotFoundException(e.getMessage());
 
         } catch (Exception e) {
-            log.error("Could not get all products. " + e.getMessage());
+            log.error("Could not get all products by seller. " + e.getMessage());
             throw new RequestException("Could not get products by seller.");
         }
     }
 
     public void registerProduct(ProductForm form) {
         try {
-            Seller seller = sellerRepository.findById(form.getSellerId()).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
             Optional<Address> optionalAddress = addressRepository.findByUserId(form.getSellerId());
 
             if (optionalAddress.isEmpty()) {
                 throw new ResourceNotFoundException("One cannot register a product if you have no address.");
             }
-            save(form.toEntity(seller));
+            save(form.toEntity(getSeller(form.getSellerId())));
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -112,7 +110,7 @@ public class ProductService {
 
     public void updateProduct(UpdateProductForm form) {
         try {
-            Product product = repository.findById(form.getProductId()).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+            Product product = getProduct(form.getProductId());
 
             product.setName(form.getName());
             product.setDescription(form.getDescription());
@@ -136,9 +134,7 @@ public class ProductService {
 
     public void deleteProductById(String productId) {
         try {
-            Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
-
-            repository.delete(product);
+            repository.delete(getProduct(productId));
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
@@ -162,5 +158,13 @@ public class ProductService {
             throw new RequestException("Product name must not be null.");
         }
         repository.save(product);
+    }
+
+    private Product getProduct(String id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(PRODUCT_NOT_FOUND));
+    }
+
+    private Seller getSeller(String sellerId) {
+        return sellerRepository.findById(sellerId).orElseThrow(() -> new ResourceNotFoundException(SELLER_NOT_FOUND));
     }
 }
