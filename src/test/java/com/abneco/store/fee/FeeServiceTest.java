@@ -3,9 +3,7 @@ package com.abneco.store.fee;
 import com.abneco.store.address.json.AddressTO;
 import com.abneco.store.exception.RequestException;
 import com.abneco.store.external.viacep.service.ViacepService;
-import com.abneco.store.fee.dto.EnumBrazilianRegions;
 import com.abneco.store.fee.service.FeeService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -49,79 +47,40 @@ class FeeServiceTest {
     public static final BigDecimal SUL_FEE = new BigDecimal("17.30");
 
     @Test
-    void testGenerateResponse() {
+    void testCalculateFee() {
         doReturn(getAddressTo(SP)).when(viacepService).getAddressTemplate(CEP);
         viacepService.getAddressTemplate(CEP);
-        BigDecimal sp = service.generateResponse(CEP);
+        BigDecimal sp = service.calculateFee(CEP);
         assertEquals(SUDESTE_FEE, sp);
 
         doReturn(getAddressTo(AL)).when(viacepService).getAddressTemplate(CEP);
-        BigDecimal al = service.generateResponse(CEP);
+        BigDecimal al = service.calculateFee(CEP);
         assertEquals(NORDESTE_FEE, al);
 
         doReturn(getAddressTo(DF)).when(viacepService).getAddressTemplate(CEP);
-        BigDecimal df = service.generateResponse(CEP);
+        BigDecimal df = service.calculateFee(CEP);
         assertEquals(CENTRO_OESTE_FEE, df);
 
         doReturn(getAddressTo(PR)).when(viacepService).getAddressTemplate(CEP);
-        BigDecimal pr = service.generateResponse(CEP);
+        BigDecimal pr = service.calculateFee(CEP);
         assertEquals(SUL_FEE, pr);
 
         doReturn(getAddressTo(AC)).when(viacepService).getAddressTemplate(CEP);
-        BigDecimal ac = service.generateResponse(CEP);
+        BigDecimal ac = service.calculateFee(CEP);
         assertEquals(NORTE_FEE, ac);
 
-        Exception exception = Assertions.assertThrows(RequestException.class, () -> service.generateResponse(null));
+        Exception exception = assertThrows(RequestException.class, () -> service.calculateFee(null));
         assertEquals("Cep is mandatory.", exception.getMessage());
 
+        doReturn(getAddressTo(NOT_A_STATE)).when(viacepService).getAddressTemplate(CEP);
+        Exception notBrazilianRegionj = assertThrows(NoSuchElementException.class, () -> service.calculateFee(CEP));
+        assertEquals("State isn't from Brazil.", notBrazilianRegionj.getMessage());
     }
 
     @Test
-    void testVerifyZone() {
-        String sp = service.verifyRegion(SP);
-        assertEquals(EnumBrazilianRegions.SUDESTE.toString(), sp);
-
-        String ac = service.verifyRegion(AC);
-        assertEquals(EnumBrazilianRegions.NORTE.toString(), ac);
-
-        String al = service.verifyRegion(AL);
-        assertEquals(EnumBrazilianRegions.NORDESTE.toString(), al);
-
-        String df = service.verifyRegion(DF);
-        assertEquals(EnumBrazilianRegions.CENTRO_OESTE.toString(), df);
-
-        String pr = service.verifyRegion(PR);
-        assertEquals(EnumBrazilianRegions.SUL.toString(), pr);
-
-        Exception notAState = Assertions.assertThrows(NoSuchElementException.class, () -> service.verifyRegion(NOT_A_STATE));
-        assertEquals("State isn't from Brazil.", notAState.getMessage());
-    }
-
-    @Test
-    void testGetFeeByZone() {
-        BigDecimal sp = service.getFeeByZone(SP);
-        assertEquals(SUDESTE_FEE, sp);
-
-        BigDecimal ac = service.getFeeByZone(AC);
-        assertEquals(NORTE_FEE, ac);
-
-        BigDecimal al = service.getFeeByZone(AL);
-        assertEquals(NORDESTE_FEE, al);
-
-        BigDecimal df = service.getFeeByZone(DF);
-        assertEquals(CENTRO_OESTE_FEE, df);
-
-        BigDecimal pr = service.getFeeByZone(PR);
-        assertEquals(SUL_FEE, pr);
-
-        Exception notAState = Assertions.assertThrows(NoSuchElementException.class, () -> service.getFeeByZone(NOT_A_STATE));
-        assertEquals("State isn't from Brazil.", notAState.getMessage());
-    }
-
-    @Test
-    void testGenerateResponseException() {
+    void testCalculateFeeAddressException() {
         when(viacepService.getAddressTemplate(CEP)).thenThrow(RuntimeException.class);
-        Exception exception = assertThrows(RequestException.class, () -> service.generateResponse(CEP));
+        Exception exception = assertThrows(RequestException.class, () -> service.calculateFee(CEP));
         assertEquals("Could not calculate delivery fee for cep: " + CEP, exception.getMessage());
     }
 

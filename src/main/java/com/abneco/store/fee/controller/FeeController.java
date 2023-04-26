@@ -22,7 +22,7 @@ public class FeeController {
     @PostMapping("/consulta-endereco")
     @ResponseStatus(HttpStatus.OK)
     public BigDecimal getDeliveryFeeByCep(@RequestBody CepForm form) {
-        return service.generateResponse(form.getCep());
+        return service.calculateFee(form.getCep());
     }
 }
 
