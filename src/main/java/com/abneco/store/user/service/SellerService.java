@@ -67,8 +67,8 @@ public class SellerService extends UserService {
 
     public SellerResponse findSellerById(String id) {
         try {
-            Seller seller = getSeller(id);
-            return seller.toResponse();
+            return getSeller(id).toResponse();
+
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -92,8 +92,8 @@ public class SellerService extends UserService {
 
     public void deleteSellerById(String id) {
         try {
-            Seller seller = getSeller(id);
-            sellerRepository.delete(seller);
+            sellerRepository.delete(getSeller(id));
+
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());

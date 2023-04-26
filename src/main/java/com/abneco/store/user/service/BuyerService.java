@@ -36,8 +36,7 @@ public class BuyerService extends UserService {
 
     public BuyerResponse findBuyerById(String id) {
         try {
-            Buyer buyer = getBuyer(id);
-            return buyer.toResponse();
+            return getBuyer(id).toResponse();
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());

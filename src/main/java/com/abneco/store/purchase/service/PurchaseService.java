@@ -48,8 +48,7 @@ public class PurchaseService {
 
     public PurchaseResponse getPurchaseById(String purchaseId) {
         try {
-            Purchase purchase = getPurchase(purchaseId);
-            return purchase.toResponse(productRepository);
+            return getPurchase(purchaseId).toResponse(productRepository);
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
             throw new ResourceNotFoundException(e.getMessage());
@@ -126,8 +125,7 @@ public class PurchaseService {
 
     public void deletePurchase(String purchaseId) {
         try {
-            Purchase purchase = getPurchase(purchaseId);
-            repository.deleteById(purchase.getId());
+            repository.deleteById(getPurchase(purchaseId).getId());
 
         } catch (ResourceNotFoundException e) {
             log.error(e.getMessage());
