@@ -4,12 +4,10 @@ import com.abneco.store.product.entity.Product;
 import com.abneco.store.user.entity.Seller;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class ProductForm {
 
